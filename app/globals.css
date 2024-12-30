@@ -1,0 +1,93 @@
+@import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700&family=Roboto:wght@300;400;500&display=swap');
+
+:root {
+  --primary: #2563eb;
+  --primary-dark: #1d4ed8;
+  --secondary: #10b981;
+  --secondary-dark: #059669;
+  --accent: #f97316;
+  --background: #ffffff;
+  --text: #1f2937;
+  --text-light: #4b5563;
+  --border: #e5e7eb;
+}
+
+[data-theme='dark'] {
+  --primary: #3b82f6;
+  --primary-dark: #2563eb;
+  --secondary: #34d399;
+  --secondary-dark: #10b981;
+  --accent: #fb923c;
+  --background: #0f172a;
+  --text: #f1f5f9;
+  --text-light: #cbd5e1;
+  --border: #1e293b;
+}
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* Custom base styles */
+@layer base {
+  body {
+    @apply antialiased;
+  }
+  h1 {
+    @apply text-4xl font-bold;
+  }
+  h2 {
+    @apply text-3xl font-bold;
+  }
+  h3 {
+    @apply text-2xl font-bold;
+  }
+}
+h1 {
+  color: blue !important;
+}
+
+/* Custom components */
+@layer components {
+  .btn-primary {
+    @apply px-6 py-3 bg-gradient-to-r from-blue-500 to-blue-600 text-white rounded-lg 
+    font-semibold transition-all duration-200 hover:from-blue-600 hover:to-blue-700 
+    focus:ring-2 focus:ring-blue-500 focus:ring-opacity-50;
+  }
+  
+  .btn-primary-rectangle {
+    @apply px-6 py-3 bg-gradient-to-r from-blue-500 to-blue-600 text-white rounded-lg 
+    font-semibold transition-all duration-200 hover:from-blue-600 hover:to-blue-700;
+  }
+
+  .btn-secondary {
+    @apply px-6 py-3 bg-gradient-to-r from-green-500 to-green-600 text-white rounded-lg 
+    font-semibold transition-all duration-200 hover:from-green-600 hover:to-green-700;
+  }
+
+  .container {
+    @apply max-w-7xl mx-auto px-4 sm:px-6 lg:px-8;
+  }
+}
+
+/* Custom utilities */
+@layer utilities {
+  .text-gradient {
+    @apply bg-clip-text text-transparent bg-gradient-to-r from-blue-500 to-purple-600;
+  }
+}
+
+/* Custom styles */
+.custom-cursor {
+  @apply fixed w-8 h-8 pointer-events-none mix-blend-difference 
+  rounded-full border-2 border-white z-50;
+}
+
+/* Dark mode styles */
+.dark {
+  --tw-bg-opacity: 1;
+  background-color: rgb(17 24 39 / var(--tw-bg-opacity));
+  color: white;
+}
+
+
