@@ -1,3 +1,9 @@
 {
-  "/page": "app/page.js"
+  "/page": "app/page.js",
+  "/shop/page": "app/shop/page.js",
+  "/aurabox/page": "app/aurabox/page.js",
+  "/login/page": "app/login/page.js",
+  "/find-doctor/page": "app/find-doctor/page.js",
+  "/about/page": "app/about/page.js",
+  "/dashboard/page": "app/dashboard/page.js"
 }
