@@ -3,7 +3,7 @@
 import { useEffect, useState } from 'react'
 import { useAuth } from '../hooks/useAuth'
 import { collection, getDocs } from 'firebase/firestore'
-import { db } from '../firebase/config'
+import { firestore } from '../firebase/config'
 import { toast } from 'react-hot-toast'
 
 interface Order {
@@ -23,7 +23,7 @@ export default function Orders() {
       if (!user?.uid) return
 
       try {
-        const ordersRef = collection(db, 'users', user.uid, 'orders')
+        const ordersRef = collection(firestore, 'users', user.uid, 'orders')
         const snapshot = await getDocs(ordersRef)
         const ordersData = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() })) as Order[]
         setOrders(ordersData)
@@ -43,15 +43,17 @@ export default function Orders() {
   }
 
   return (
-    <div>
-      <h2>Recent Orders</h2>
+    <div className="container mx-auto p-4">
+      <h2 className="text-2xl font-bold mb-4">Recent Orders</h2>
       {orders.length === 0 ? (
-        <p>No recent orders.</p>
+        <p className="text-gray-600">No recent orders.</p>
       ) : (
-        <ul>
+        <ul className="space-y-4">
           {orders.map(order => (
-            <li key={order.id}>
-              {order.item} (Quantity: {order.quantity}) - Status: {order.status}
+            <li key={order.id} className="border p-4 rounded-lg shadow-sm">
+              <p className="font-semibold">{order.item}</p>
+              <p className="text-sm text-gray-600">Quantity: {order.quantity}</p>
+              <p className="text-sm text-gray-600">Status: {order.status}</p>
             </li>
           ))}
         </ul>

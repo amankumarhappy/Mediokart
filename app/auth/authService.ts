@@ -88,3 +88,10 @@ declare global {
   }
 }
 
+
+export const updateUserProfile = async (user, displayName) => {
+  // Implement the updateUserProfile function here
+  // This is just a placeholder implementation
+  console.log('Updating user profile:', user, displayName);
+  // Add your Firebase logic here
+}

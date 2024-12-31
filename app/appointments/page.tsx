@@ -3,8 +3,8 @@
 import { useEffect, useState } from 'react'
 import { useAuth } from '../hooks/useAuth'
 import { collection, getDocs, addDoc, serverTimestamp } from 'firebase/firestore'
-import { db } from '../firebase/config'
 import { toast } from 'react-hot-toast'
+import { firestore } from '../firebase/config'
 
 interface Appointment {
   id: string
@@ -29,7 +29,7 @@ export default function Appointments() {
     if (!user?.uid) return
 
     try {
-      const appointmentsRef = collection(db, 'users', user.uid, 'appointments')
+      const appointmentsRef = collection(firestore, 'users', user.uid, 'appointments')
       const snapshot = await getDocs(appointmentsRef)
       const appointmentsData = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() })) as Appointment[]
       setAppointments(appointmentsData)
@@ -46,7 +46,7 @@ export default function Appointments() {
     if (!user?.uid) return
 
     try {
-      const appointmentsRef = collection(db, 'users', user.uid, 'appointments')
+      const appointmentsRef = collection(firestore, 'users', user.uid, 'appointments')
       await addDoc(appointmentsRef, {
         date,
         time,

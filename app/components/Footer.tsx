@@ -3,7 +3,7 @@
 import Link from 'next/link'
 import { motion } from 'framer-motion'
 import { MapPin, Phone, Mail } from 'lucide-react'
-import { FaInstagram, FaTwitter, FaLinkedin, FaGithub } from 'react-icons/fa'
+import { FaGithub, FaInstagram, FaLinkedin, FaTwitter } from 'react-icons/fa';
 
 const Footer = () => {
   return (

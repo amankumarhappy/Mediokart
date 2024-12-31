@@ -29,3 +29,10 @@ export { app, auth, db, analytics, googleProvider };
 
 
 
+export const createOrder = async (orderData) => {
+  // Implement the createOrder function here
+  // This is just a placeholder implementation
+  console.log('Creating order:', orderData);
+  // Add your Firebase logic here
+}
+

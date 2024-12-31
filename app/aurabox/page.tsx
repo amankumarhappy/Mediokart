@@ -3,7 +3,7 @@
 import { motion } from 'framer-motion'
 import Image from 'next/image'
 import Link from 'next/link'
-import { FaMedkit, FaCog, FaClock, FaQrcode, FaToolbox, FaBell, FaCloud, FaWallet, FaShield, FaArrowRight } from 'react-icons/fa'
+import { FaMedkit, FaCog, FaClock, FaQrcode, FaToolbox, FaBell, FaCloud, FaWallet, FaShieldAlt, FaArrowRight } from 'react-icons/fa'
 
 const AuraBox = () => {
   const features = [
@@ -231,4 +231,19 @@ const AuraBox = () => {
   )
 }
 
-export default AuraBox
+
+const icons = {
+  Medkit: <FaMedkit />,
+  Cog: <FaCog />,
+  Clock: <FaClock />,
+  Qrcode: <FaQrcode />,
+  Toolbox: <FaToolbox />,
+  Bell: <FaBell />,
+  Cloud: <FaCloud />,
+  Wallet: <FaWallet />,
+  ShieldAlt: <FaShieldAlt />,
+  ArrowRight: <FaArrowRight />
+};
+
+
+export default AuraBox;

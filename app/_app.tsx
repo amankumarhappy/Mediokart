@@ -1,4 +1,15 @@
-import { AuthProvider } from '../hooks/useAuth';
+import { useAuth } from '../hooks/useAuth';
+import { createContext } from 'react';
+export const AuthContext = createContext(null);
+
+const AuthProvider = ({ children }) => {
+  const auth = useAuth();
+  return (
+    <AuthContext.Provider value={auth}>
+      {children}
+    </AuthContext.Provider>
+  );
+};
 
 function MyApp({ Component, pageProps }) {
   return (
@@ -9,3 +20,4 @@ function MyApp({ Component, pageProps }) {
 }
 
 export default MyApp;
+
