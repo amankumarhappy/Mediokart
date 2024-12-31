@@ -7,6 +7,13 @@ import { useAuth } from '../hooks/useAuth'
 import { db } from '../firebase/config'
 import { collection, addDoc, serverTimestamp } from 'firebase/firestore'
 import { toast } from 'react-hot-toast'
+import { GetServerSideProps } from 'next'
+
+interface PageProps {
+  params: {
+    productId: string
+  }
+}
 
 const products = {
   basic: { name: 'AuraBox Basic', price: 99.99 },
@@ -14,7 +21,7 @@ const products = {
   pro: { name: 'AuraBox Pro', price: 199.99 }
 }
 
-export default function BuyNowPage({ params }: { params: { productId: string } }) {
+const BuyNowPage = ({ params }: PageProps) => {
   const router = useRouter()
   const { user } = useAuth()
   const [formData, setFormData] = useState({
@@ -176,4 +183,18 @@ export default function BuyNowPage({ params }: { params: { productId: string } }
     </div>
   )
 }
+
+export const getServerSideProps: GetServerSideProps = async (context) => {
+  const { productId } = context.params
+
+  return {
+    props: {
+      params: {
+        productId
+      }
+    }
+  }
+}
+
+export default BuyNowPage
 
