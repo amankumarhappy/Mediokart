@@ -1,24 +1,13 @@
-'use client'
+import React from 'react';
 
-import HeroSection from './components/HeroSection'
-import ServicesSection from './components/ServicesSection'
-import AuraBoxHighlight from './components/AuraBoxHighlight'
-import CompanyOverview from './components/CompanyOverview'
-import ContactForm from './components/ContactForm'
-import HealthTips from './components/HealthTips'
-import Newsletter from './components/Newsletter'
-
-export default function Home() {
+const HomePage = () => {
   return (
-    <main className="min-h-screen">
-      <HeroSection />
-      <ServicesSection />
-      <AuraBoxHighlight />
-      <CompanyOverview />
-      <HealthTips />
-      <ContactForm />
-      <Newsletter />
-    </main>
-  )
-}
+    <div>
+      <h1>Welcome to Mediokart</h1>
+      {/* Add your content here */}
+    </div>
+  );
+};
+
+export default HomePage;
 

@@ -36,7 +36,7 @@ const BuyNowPage = ({ params }: PageProps) => {
   const product = products[params.productId as keyof typeof products]
 
   useEffect(() => {
-    if (!user) {
+    if (typeof window !== 'undefined' && !user) {
       toast.error('Please log in to make a purchase')
       router.push('/login')
     }

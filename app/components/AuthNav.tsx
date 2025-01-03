@@ -9,17 +9,17 @@ export default function AuthNav() {
   if (!user) {
     return (
       <div className="flex gap-4">
-        <Link href="/login"><a className="btn-primary">Login</a></Link>
-        <Link href="/signup"><a className="btn-secondary">Sign Up</a></Link>
+        <Link href="/login" className="btn-primary">Login</Link>
+        <Link href="/signup" className="btn-secondary">Sign Up</Link>
       </div>
     )
   }
 
   return (
     <div className="flex gap-4 items-center">
-      <Link href="/dashboard"><a className="btn-primary">Dashboard</a></Link>
-      <Link href="/profile"><a className="btn-secondary">Profile</a></Link>
-      <Link href="/my-account"><a className="btn-secondary">My Account</a></Link>
+      <Link href="/dashboard" className="btn-primary">Dashboard</Link>
+      <Link href="/profile" className="btn-secondary">Profile</Link>
+      <Link href="/my-account" className="btn-secondary">My Account</Link>
       <button onClick={signOut} className="btn-secondary">Logout</button>
     </div>
   )

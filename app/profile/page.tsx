@@ -7,26 +7,22 @@ import { db } from '../firebase/config'
 import { motion } from 'framer-motion'
 import { toast } from 'react-hot-toast'
 import { saveUserProfile, getUserProfile, updateUserProfile, UserProfile } from '../firebase/userProfile'
+import { getStorage, ref as storageRef, uploadBytes, getDownloadURL } from 'firebase/storage'
 import Link from 'next/link'
 import { LayoutDashboard } from 'lucide-react'
 
 
-interface UserProfile {
-  displayName: string;
-  email: string;
-  age: number; // Ensure age is included
-}
-
 interface ProfileData {
-  displayName: string
+  username: string
   email: string
-  age: number
+  age: string
   gender: string
   city: string
   state: string
   phone: string
   allergies: string
   healthConditions: string
+  profilePicture?: string
   createdAt?: number
   updatedAt?: number
 }
@@ -37,9 +33,9 @@ export default function Profile() {
   const [saving, setSaving] = useState(false)
   const [saveStatus, setSaveStatus] = useState<'idle' | 'saving' | 'success' | 'error'>('idle')
   const [profile, setProfile] = useState<ProfileData>({
-    displayName: '',
+    username: '',
     email: '',
-    age: 0,
+    age: '',
     gender: '',
     city: '',
     state: '',
@@ -47,6 +43,7 @@ export default function Profile() {
     allergies: '',
     healthConditions: ''
   })
+  const [profilePicture, setProfilePicture] = useState<string | null>(null)
 
   // Reset save status after showing success
   useEffect(() => {
@@ -69,21 +66,15 @@ export default function Profile() {
         const userData = await getUserProfile(user.uid)
         if (userData) {
           setProfile({
-            displayName: userData.displayName || user.email?.split('@')[0] || '',
+            ...userData,
             email: user.email || '',
-            age: userData.age || 0,
-            gender: userData.gender || '',
-            city: userData.city || '',
-            state: userData.state || '',
-            phone: userData.phone || '',
-            allergies: userData.allergies || '',
-            healthConditions: userData.healthConditions || ''
+            username: userData.username || user.email?.split('@')[0] || ''
           })
+          setProfilePicture(userData.profilePicture || null)
         } else {
           const newProfile: UserProfile = {
-            displayName: user.email?.split('@')[0] || '',
+            username: user.email?.split('@')[0] || '',
             email: user.email || '',
-            age: 0,
             createdAt: Date.now()
           }
           
@@ -115,6 +106,7 @@ export default function Profile() {
     try {
       const updatedProfile: Partial<UserProfile> = {
         ...profile,
+        profilePicture,
       }
 
       await updateUserProfile(user.uid, updatedProfile)
@@ -135,6 +127,32 @@ export default function Profile() {
       ...prev,
       [name]: value
     }))
+  }
+
+  const handleImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0]
+    if (!file || !user?.uid) return
+
+    const storage = getStorage()
+    const imageRef = storageRef(storage, `profilePictures/${user.uid}`)
+
+    try {
+      setSaving(true)
+      const snapshot = await uploadBytes(imageRef, file)
+      const downloadURL = await getDownloadURL(snapshot.ref)
+      setProfilePicture(downloadURL)
+      
+      // Update the profile with the new profile picture URL
+      const updatedProfile = { ...profile, profilePicture: downloadURL }
+      await updateUserProfile(user.uid, updatedProfile)
+      setProfile(updatedProfile)
+      toast.success('Profile picture updated successfully!')
+    } catch (error) {
+      console.error('Error uploading image:', error)
+      toast.error('Failed to upload profile picture. Please try again.')
+    } finally {
+      setSaving(false)
+    }
   }
 
   if (loading) {
@@ -183,18 +201,42 @@ export default function Profile() {
               </motion.div>
             )}
           </div>
+          <div className="flex items-center space-x-6 mb-6">
+            <div className="shrink-0">
+              <img
+                className="h-16 w-16 object-cover rounded-full"
+                src={profilePicture || '/placeholder-avatar.png'}
+                alt="Profile picture"
+              />
+            </div>
+            <label className="block">
+              <span className="sr-only">Choose profile photo</span>
+              <input
+                type="file"
+                accept="image/*"
+                onChange={handleImageUpload}
+                className="block w-full text-sm text-slate-500
+                  file:mr-4 file:py-2 file:px-4
+                  file:rounded-full file:border-0
+                  file:text-sm file:font-semibold
+                  file:bg-violet-50 file:text-violet-700
+                  hover:file:bg-violet-100
+                "
+              />
+            </label>
+          </div>
           <form onSubmit={handleSubmit} className="space-y-6">
             {/* Form fields remain the same */}
             <div className="grid grid-cols-1 gap-6 sm:grid-cols-2">
               <div>
-                <label htmlFor="displayName" className="block text-sm font-medium text-gray-700">
+                <label htmlFor="username" className="block text-sm font-medium text-gray-700">
                   Username
                 </label>
                 <input
                   type="text"
-                  id="displayName"
-                  name="displayName"
-                  value={profile.displayName}
+                  id="username"
+                  name="username"
+                  value={profile.username}
                   onChange={handleChange}
                   className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
                   required

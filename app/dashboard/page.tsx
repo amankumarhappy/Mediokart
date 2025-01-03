@@ -1,17 +1,17 @@
 'use client'
 
 import { useState, useEffect } from 'react'
-import { useAuth } from '../hooks/useAuth'
-import { ref, onValue } from 'firebase/database'
-import { db } from '../firebase/config'
+import { useAuth } from '../../hooks/useAuth'
+import { doc, getDoc } from 'firebase/firestore'
+import { db } from '../../firebase/config'
 import { motion, AnimatePresence } from 'framer-motion'
-import { Calendar, ShoppingCart, Bell, BookOpen, User, LogIn, Settings, FileText } from 'lucide-react'
+import { Calendar, ShoppingCart, Bell, BookOpen, User, LogIn } from 'lucide-react'
 import Link from 'next/link'
 
 interface UserData {
   username: string
   email: string
-  createdAt?: string
+  createdAt: string
   lastLogin?: string
   appointments?: number
   prescriptions?: number
@@ -26,36 +26,35 @@ export default function Dashboard() {
   const [isNewUser, setIsNewUser] = useState(false)
 
   useEffect(() => {
-    if (!user?.uid) {
-      setLoading(false)
-      return
-    }
+    const loadUserData = async () => {
+      if (!user) {
+        setLoading(false)
+        return
+      }
 
-    const userRef = ref(db, `users/${user.uid}`)
-    const unsubscribe = onValue(userRef, (snapshot) => {
-      if (snapshot.exists()) {
-        const data = snapshot.val()
-        const displayName = data.username || user.email?.split('@')[0] || 'User'
-        setUserData({
-          ...data,
-          username: displayName,
-          email: user.email || '',
-        })
-
-        if (data.createdAt) {
+      try {
+        const userDoc = await getDoc(doc(db, 'users', user.uid))
+        if (userDoc.exists()) {
+          const data = userDoc.data() as UserData
+          const displayName = data.username || user.email?.split('@')[0] || 'User'
+          setUserData({
+            ...data,
+            username: displayName
+          })
+          
           const createdAt = new Date(data.createdAt)
           const now = new Date()
           const diffHours = Math.abs(now.getTime() - createdAt.getTime()) / 36e5
           setIsNewUser(diffHours < 24)
         }
+      } catch (error) {
+        console.error('Error loading user data:', error)
+      } finally {
+        setLoading(false)
       }
-      setLoading(false)
-    }, (error) => {
-      console.error('Error loading user data:', error)
-      setLoading(false)
-    })
+    }
 
-    return () => unsubscribe()
+    loadUserData()
   }, [user])
 
   if (loading) {
@@ -66,21 +65,11 @@ export default function Dashboard() {
     )
   }
 
-  if (!user || !userData) {
-    return (
-      <div className="min-h-screen flex items-center justify-center">
-        <div className="text-center">
-          <h2 className="text-2xl font-bold text-gray-900">Please log in</h2>
-          <p className="mt-2 text-gray-600">You need to be logged in to view your dashboard</p>
-        </div>
-      </div>
-    )
-  }
-
   return (
-    <div className="min-h-screen bg-gray-100 py-12 px-4 sm:px-6 lg:px-8">
+    <div className="min-h-screen bg-gray-100">
       <AnimatePresence>
         {user ? (
+          // Logged-in user view
           <>
             <motion.div
               initial={{ opacity: 0, y: -50 }}
@@ -103,7 +92,7 @@ export default function Dashboard() {
                   transition={{ delay: 0.6 }}
                   className="text-lg opacity-90"
                 >
-                  Hello, {userData.username}! {isNewUser ? "We're excited to have you here." : "Great to see you again."}
+                  Hello, {userData?.username || 'User'}! {isNewUser ? "We're excited to have you here." : "Great to see you again."}
                 </motion.p>
               </div>
             </motion.div>
@@ -120,7 +109,7 @@ export default function Dashboard() {
                     <h2 className="text-lg font-semibold">Upcoming Appointments</h2>
                     <Calendar className="h-6 w-6 text-blue-500" />
                   </div>
-                  <p className="text-3xl font-bold text-blue-600">{userData.appointments || 0}</p>
+                  <p className="text-3xl font-bold text-blue-600">{userData?.appointments || 0}</p>
                   <Link href="/appointments" className="text-blue-500 hover:underline text-sm mt-2 inline-block">
                     View all appointments →
                   </Link>
@@ -136,7 +125,7 @@ export default function Dashboard() {
                     <h2 className="text-lg font-semibold">Recent Orders</h2>
                     <ShoppingCart className="h-6 w-6 text-green-500" />
                   </div>
-                  <p className="text-3xl font-bold text-green-600">{userData.orders || 0}</p>
+                  <p className="text-3xl font-bold text-green-600">{userData?.orders || 0}</p>
                   <Link href="/orders" className="text-green-500 hover:underline text-sm mt-2 inline-block">
                     View order history →
                   </Link>
@@ -152,7 +141,7 @@ export default function Dashboard() {
                     <h2 className="text-lg font-semibold">Notifications</h2>
                     <Bell className="h-6 w-6 text-purple-500" />
                   </div>
-                  <p className="text-3xl font-bold text-purple-600">{userData.notifications || 0}</p>
+                  <p className="text-3xl font-bold text-purple-600">{userData?.notifications || 0}</p>
                   <Link href="/notifications" className="text-purple-500 hover:underline text-sm mt-2 inline-block">
                     View all notifications →
                   </Link>
@@ -195,6 +184,7 @@ export default function Dashboard() {
             </div>
           </>
         ) : (
+          // Pre-login view
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
