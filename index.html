@@ -471,15 +471,6 @@
         </div>
     </div>
 
-    <h3>Total Visitors: <span id="visits">Loading...</span></h3>
-
-<script>
-  fetch('https://api.countapi.xyz/hit/mediokart.in/visits')
-    .then(res => res.json())
-    .then(data => {
-      document.getElementById('visits').innerText = data.value;
-    });
-</script>
-
+   
 </body>
 </html>
