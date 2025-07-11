@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useAuth } from '../contexts/AuthContext';
 import { db } from '../config/firebase';
-import { doc, updateDoc } from 'firebase/firestore';
+import { doc, updateDoc, onSnapshot } from 'firebase/firestore';
 
 const bloodGroups = [
   '', 'A+', 'A-', 'B+', 'B-', 'AB+', 'AB-', 'O+', 'O-'
@@ -9,33 +9,48 @@ const bloodGroups = [
 const genders = ['', 'Male', 'Female', 'Other'];
 
 const Profile: React.FC = () => {
-  const { currentUser, userData } = useAuth();
+  const { currentUser } = useAuth();
   const [profile, setProfile] = useState({
-    fullName: userData?.displayName || '',
-    gender: userData?.gender || '',
-    dob: userData?.dob || '',
+    fullName: '',
+    gender: '',
+    dob: '',
     age: '',
-    bloodGroup: userData?.bloodGroup || '',
-    emergencyContactName: userData?.emergencyContactName || '',
-    emergencyContactNumber: userData?.emergencyContactNumber || '',
-    email: userData?.email || '',
-    phoneNumber: userData?.phoneNumber || '',
-    alternateNumber: userData?.alternateNumber || '',
-    address: userData?.address || '',
-    city: userData?.city || '',
-    state: userData?.state || '',
-    pincode: userData?.pincode || '',
-    country: userData?.country || '',
-    height: userData?.height || '',
-    weight: userData?.weight || '',
+    bloodGroup: '',
+    emergencyContactName: '',
+    emergencyContactNumber: '',
+    email: '',
+    phoneNumber: '',
+    alternateNumber: '',
+    address: '',
+    city: '',
+    state: '',
+    pincode: '',
+    country: '',
+    height: '',
+    weight: '',
     bmi: '',
-    allergies: userData?.allergies || '',
-    chronic: userData?.chronic || '',
-    medications: userData?.medications || '',
-    familyHistory: userData?.familyHistory || ''
+    allergies: '',
+    chronic: '',
+    medications: '',
+    familyHistory: ''
   });
   const [saving, setSaving] = useState(false);
   const [success, setSuccess] = useState(false);
+
+  // Real-time sync with Firestore
+  useEffect(() => {
+    if (!currentUser) return;
+    const unsub = onSnapshot(doc(db, 'users', currentUser.uid), (docSnap) => {
+      if (docSnap.exists()) {
+        const data = docSnap.data();
+        setProfile((prev) => ({
+          ...prev,
+          ...data,
+        }));
+      }
+    });
+    return () => unsub();
+  }, [currentUser]);
 
   // Calculate age and BMI
   useEffect(() => {
@@ -82,35 +97,35 @@ const Profile: React.FC = () => {
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div>
               <label className="block text-sm font-medium mb-1">Full Name</label>
-              <input name="fullName" value={profile.fullName} onChange={handleChange} className="w-full border rounded px-3 py-2" />
+              <input name="fullName" value={profile.fullName} onChange={handleChange} className="w-full border rounded px-3 py-2 bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100" />
             </div>
             <div>
               <label className="block text-sm font-medium mb-1">Gender</label>
-              <select name="gender" value={profile.gender} onChange={handleChange} className="w-full border rounded px-3 py-2">
+              <select name="gender" value={profile.gender} onChange={handleChange} className="w-full border rounded px-3 py-2 bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100">
                 {genders.map(g => <option key={g} value={g}>{g}</option>)}
               </select>
             </div>
             <div>
               <label className="block text-sm font-medium mb-1">Date of Birth</label>
-              <input type="date" name="dob" value={profile.dob} onChange={handleChange} className="w-full border rounded px-3 py-2" />
+              <input type="date" name="dob" value={profile.dob} onChange={handleChange} className="w-full border rounded px-3 py-2 bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100" />
             </div>
             <div>
               <label className="block text-sm font-medium mb-1">Age</label>
-              <input value={profile.age} readOnly className="w-full border rounded px-3 py-2 bg-gray-100" />
+              <input value={profile.age} readOnly className="w-full border rounded px-3 py-2 bg-gray-100 dark:bg-gray-700 text-gray-900 dark:text-gray-100" />
             </div>
             <div>
               <label className="block text-sm font-medium mb-1">Blood Group</label>
-              <select name="bloodGroup" value={profile.bloodGroup} onChange={handleChange} className="w-full border rounded px-3 py-2">
+              <select name="bloodGroup" value={profile.bloodGroup} onChange={handleChange} className="w-full border rounded px-3 py-2 bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100">
                 {bloodGroups.map(bg => <option key={bg} value={bg}>{bg}</option>)}
               </select>
             </div>
             <div>
               <label className="block text-sm font-medium mb-1">Emergency Contact Name</label>
-              <input name="emergencyContactName" value={profile.emergencyContactName} onChange={handleChange} className="w-full border rounded px-3 py-2" />
+              <input name="emergencyContactName" value={profile.emergencyContactName} onChange={handleChange} className="w-full border rounded px-3 py-2 bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100" />
             </div>
             <div>
               <label className="block text-sm font-medium mb-1">Emergency Contact Number</label>
-              <input name="emergencyContactNumber" value={profile.emergencyContactNumber} onChange={handleChange} className="w-full border rounded px-3 py-2" />
+              <input name="emergencyContactNumber" value={profile.emergencyContactNumber} onChange={handleChange} className="w-full border rounded px-3 py-2 bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100" />
             </div>
           </div>
         </section>
@@ -120,35 +135,35 @@ const Profile: React.FC = () => {
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div>
               <label className="block text-sm font-medium mb-1">Email Address</label>
-              <input name="email" value={profile.email} onChange={handleChange} className="w-full border rounded px-3 py-2" />
+              <input name="email" value={profile.email} onChange={handleChange} className="w-full border rounded px-3 py-2 bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100" />
             </div>
             <div>
               <label className="block text-sm font-medium mb-1">Mobile Number</label>
-              <input name="phoneNumber" value={profile.phoneNumber} onChange={handleChange} className="w-full border rounded px-3 py-2" />
+              <input name="phoneNumber" value={profile.phoneNumber} onChange={handleChange} className="w-full border rounded px-3 py-2 bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100" />
             </div>
             <div>
               <label className="block text-sm font-medium mb-1">Alternate Number</label>
-              <input name="alternateNumber" value={profile.alternateNumber} onChange={handleChange} className="w-full border rounded px-3 py-2" />
+              <input name="alternateNumber" value={profile.alternateNumber} onChange={handleChange} className="w-full border rounded px-3 py-2 bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100" />
             </div>
             <div>
               <label className="block text-sm font-medium mb-1">Residential Address</label>
-              <input name="address" value={profile.address} onChange={handleChange} className="w-full border rounded px-3 py-2" />
+              <input name="address" value={profile.address} onChange={handleChange} className="w-full border rounded px-3 py-2 bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100" />
             </div>
             <div>
               <label className="block text-sm font-medium mb-1">City</label>
-              <input name="city" value={profile.city} onChange={handleChange} className="w-full border rounded px-3 py-2" />
+              <input name="city" value={profile.city} onChange={handleChange} className="w-full border rounded px-3 py-2 bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100" />
             </div>
             <div>
               <label className="block text-sm font-medium mb-1">State</label>
-              <input name="state" value={profile.state} onChange={handleChange} className="w-full border rounded px-3 py-2" />
+              <input name="state" value={profile.state} onChange={handleChange} className="w-full border rounded px-3 py-2 bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100" />
             </div>
             <div>
               <label className="block text-sm font-medium mb-1">Pincode</label>
-              <input name="pincode" value={profile.pincode} onChange={handleChange} className="w-full border rounded px-3 py-2" />
+              <input name="pincode" value={profile.pincode} onChange={handleChange} className="w-full border rounded px-3 py-2 bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100" />
             </div>
             <div>
               <label className="block text-sm font-medium mb-1">Country</label>
-              <input name="country" value={profile.country} onChange={handleChange} className="w-full border rounded px-3 py-2" />
+              <input name="country" value={profile.country} onChange={handleChange} className="w-full border rounded px-3 py-2 bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100" />
             </div>
           </div>
         </section>
@@ -158,31 +173,31 @@ const Profile: React.FC = () => {
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div>
               <label className="block text-sm font-medium mb-1">Height (cm)</label>
-              <input name="height" value={profile.height} onChange={handleChange} className="w-full border rounded px-3 py-2" />
+              <input name="height" value={profile.height} onChange={handleChange} className="w-full border rounded px-3 py-2 bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100" />
             </div>
             <div>
               <label className="block text-sm font-medium mb-1">Weight (kg)</label>
-              <input name="weight" value={profile.weight} onChange={handleChange} className="w-full border rounded px-3 py-2" />
+              <input name="weight" value={profile.weight} onChange={handleChange} className="w-full border rounded px-3 py-2 bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100" />
             </div>
             <div>
               <label className="block text-sm font-medium mb-1">BMI</label>
-              <input value={profile.bmi} readOnly className="w-full border rounded px-3 py-2 bg-gray-100" />
+              <input value={profile.bmi} readOnly className="w-full border rounded px-3 py-2 bg-gray-100 dark:bg-gray-700 text-gray-900 dark:text-gray-100" />
             </div>
             <div>
               <label className="block text-sm font-medium mb-1">Allergies</label>
-              <input name="allergies" value={profile.allergies} onChange={handleChange} className="w-full border rounded px-3 py-2" />
+              <input name="allergies" value={profile.allergies} onChange={handleChange} className="w-full border rounded px-3 py-2 bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100" />
             </div>
             <div>
               <label className="block text-sm font-medium mb-1">Chronic Conditions</label>
-              <input name="chronic" value={profile.chronic} onChange={handleChange} className="w-full border rounded px-3 py-2" />
+              <input name="chronic" value={profile.chronic} onChange={handleChange} className="w-full border rounded px-3 py-2 bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100" />
             </div>
             <div>
               <label className="block text-sm font-medium mb-1">Medications</label>
-              <input name="medications" value={profile.medications} onChange={handleChange} className="w-full border rounded px-3 py-2" />
+              <input name="medications" value={profile.medications} onChange={handleChange} className="w-full border rounded px-3 py-2 bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100" />
             </div>
             <div className="md:col-span-2">
               <label className="block text-sm font-medium mb-1">Family Medical History</label>
-              <textarea name="familyHistory" value={profile.familyHistory} onChange={handleChange} className="w-full border rounded px-3 py-2" />
+              <textarea name="familyHistory" value={profile.familyHistory} onChange={handleChange} className="w-full border rounded px-3 py-2 bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100" />
             </div>
           </div>
         </section>
