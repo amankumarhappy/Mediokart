@@ -192,6 +192,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
   const logout = async () => {
     await signOut(auth);
+    setCurrentUser(null); // Immediately update user state
     setUserData(null);
     setConfirmationResult(null);
     if (recaptchaVerifier) {

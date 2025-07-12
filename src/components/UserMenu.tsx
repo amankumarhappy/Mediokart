@@ -11,9 +11,12 @@ const UserMenu: React.FC = () => {
 
   const handleLogout = async () => {
     try {
+      console.log('Logging out...');
       await logout();
+      console.log('Logged out, redirecting...');
       setIsOpen(false);
       setMobileMenuOpen(false);
+      window.location.replace('/'); // Hard redirect to home after logout
     } catch (error) {
       console.error('Logout error:', error);
     }
@@ -58,7 +61,7 @@ const UserMenu: React.FC = () => {
         <Heart className="w-4 h-4" />
         <span>Dashboard</span>
       </button>
-      <button onClick={() => { setIsOpen(false); setMobileMenuOpen(false); navigate('/devices'); }} className="w-full flex items-center space-x-3 px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors">
+      <button onClick={() => { setIsOpen(false); setMobileMenuOpen(false); navigate('/my-devices'); }} className="w-full flex items-center space-x-3 px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors">
         <Shield className="w-4 h-4" />
         <span>My Devices</span>
       </button>

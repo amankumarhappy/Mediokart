@@ -1,8 +1,26 @@
 import React, { useState, useRef, useEffect } from 'react';
-import { Phone, Mail, MessageCircle, X, Camera, Upload, Send, Loader, Mic, MicOff, Globe, ArrowUp, ArrowDown, Type, Image as ImageIcon } from 'lucide-react';
+import { X, Camera, Upload, Send, Mic, MicOff, Globe, ArrowUp, ArrowDown } from 'lucide-react';
+import { useAuth } from '../contexts/AuthContext';
+import { db } from '../config/firebase';
+import { doc, setDoc, getDoc, updateDoc, arrayUnion, onSnapshot, collection, addDoc, query, orderBy, where, getDocs } from 'firebase/firestore';
 
-const FloatingButtons: React.FC = () => {
-  const [showChatbot, setShowChatbot] = useState(false);
+interface FloatingButtonsProps {
+  alwaysOpen?: boolean;
+  forceFullPreview?: boolean;
+  showInstallPrompt?: boolean;
+}
+
+const GUEST_CHAT_LIMIT = 2;
+
+const FloatingButtons: React.FC<FloatingButtonsProps> = ({ 
+  alwaysOpen = false, 
+  forceFullPreview = false,
+  showInstallPrompt = false 
+}) => {
+  // State
+  const { currentUser, userData, loginAnonymously } = useAuth();
+  const [showChatbot, setShowChatbot] = useState(alwaysOpen);
+  const [fullPreview, setFullPreview] = useState(forceFullPreview);
   const [messages, setMessages] = useState<Array<{id: string, text: string, sender: 'user' | 'bot', timestamp: Date, image?: string, caption?: string}>>([
     {
       id: '1',
@@ -11,6 +29,31 @@ const FloatingButtons: React.FC = () => {
       timestamp: new Date()
     }
   ]);
+  const [guestChats, setGuestChats] = useState(0);
+  const [showAuthModal, setShowAuthModal] = useState(false);
+  const [authModalMode, setAuthModalMode] = useState<'login' | 'signup'>('login');
+  const [loadingHistory, setLoadingHistory] = useState(false);
+  const [deferredPrompt, setDeferredPrompt] = useState<any>(null);
+
+  // Load chat history for logged-in users
+  useEffect(() => {
+    if (!currentUser) return;
+    setLoadingHistory(true);
+    const chatsRef = collection(db, 'chats');
+    const q = query(chatsRef, where('uid', '==', currentUser.uid), orderBy('createdAt', 'desc'));
+    getDocs(q).then((snapshot) => {
+      if (!snapshot.empty) {
+        // Use the latest chat
+        const chatDoc = snapshot.docs[0];
+        const chatData = chatDoc.data();
+        if (chatData && chatData.messages) {
+          setMessages(chatData.messages.map((m: any) => ({ ...m, timestamp: m.timestamp ? new Date(m.timestamp.seconds * 1000) : new Date() })));
+          setCurrentMessageIndex(chatData.messages.length - 1);
+        }
+      }
+      setLoadingHistory(false);
+    });
+  }, [currentUser]);
   const [inputMessage, setInputMessage] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const [isListening, setIsListening] = useState(false);
@@ -56,13 +99,7 @@ const FloatingButtons: React.FC = () => {
     }
   }, [language]);
 
-  const handleCall = () => {
-    window.open('tel:+919153737258', '_self');
-  };
-
-  const handleEmail = () => {
-    window.open('mailto:mediokart@zohomail.in', '_self');
-  };
+  // Removed handleCall and handleEmail as call/email buttons are removed
 
   const startVoiceRecognition = () => {
     if (recognitionRef.current && !isListening) {
@@ -187,6 +224,15 @@ Remember: Your primary goal is to be helpful while ensuring user safety by never
   const handleSendMessage = async () => {
     if ((!inputMessage.trim() && !pendingImage) || isLoading) return;
 
+    // Guest chat limit logic
+    if (!currentUser || currentUser.isAnonymous) {
+      if (guestChats >= GUEST_CHAT_LIMIT) {
+        setShowAuthModal(true);
+        return;
+      }
+      setGuestChats((prev) => prev + 1);
+    }
+
     const userMessage = {
       id: Date.now().toString(),
       text: inputMessage || (pendingImage ? 'Image shared' : ''),
@@ -222,6 +268,30 @@ Remember: Your primary goal is to be helpful while ensuring user safety by never
 
       setMessages(prev => [...prev, botMessage]);
       setCurrentMessageIndex(prev => prev + 1);
+
+      // Save chat to Firestore for logged-in users
+      if (currentUser && !currentUser.isAnonymous) {
+        const chatsRef = collection(db, 'chats');
+        // Try to find latest chat for this user
+        const q = query(chatsRef, where('uid', '==', currentUser.uid), orderBy('createdAt', 'desc'));
+        const snapshot = await getDocs(q);
+        if (!snapshot.empty) {
+          // Update latest chat
+          const chatDoc = snapshot.docs[0];
+          await updateDoc(chatDoc.ref, {
+            messages: [...messages, userMessage, botMessage],
+            updatedAt: new Date()
+          });
+        } else {
+          // Create new chat
+          await addDoc(chatsRef, {
+            uid: currentUser.uid,
+            messages: [...messages, userMessage, botMessage],
+            createdAt: new Date(),
+            updatedAt: new Date()
+          });
+        }
+      }
     } catch (error) {
       const errorMessage = {
         id: (Date.now() + 1).toString(),
@@ -298,51 +368,183 @@ Remember: Your primary goal is to be helpful while ensuring user safety by never
     { code: 'hi', name: 'हिंदी', flag: '🇮🇳' }
   ];
 
+  // Draggable floating button state
+  const [buttonPosition, setButtonPosition] = useState<{ x: number; y: number }>({ x: 0, y: 0 });
+  const [dragging, setDragging] = useState(false);
+  const [dragStart, setDragStart] = useState<{ x: number; y: number } | null>(null);
+  const [buttonStart, setButtonStart] = useState<{ x: number; y: number } | null>(null);
+  const longPressTimeout = useRef<NodeJS.Timeout | null>(null);
+  const buttonRef = useRef<HTMLButtonElement>(null);
+
+  // Set initial position to bottom right with proper mobile handling
+  useEffect(() => {
+    const setInitialPosition = () => {
+      const padding = 24; // Consistent padding from edges
+      const buttonSize = 64; // 16 * 4 (w-16 class)
+      setButtonPosition({
+        x: window.innerWidth - (buttonSize + padding),
+        y: window.innerHeight - (buttonSize + padding)
+      });
+    };
+
+    setInitialPosition();
+    window.addEventListener('resize', setInitialPosition);
+    window.addEventListener('orientationchange', setInitialPosition);
+
+    return () => {
+      window.removeEventListener('resize', setInitialPosition);
+      window.removeEventListener('orientationchange', setInitialPosition);
+    };
+  }, []);
+
+  // Update position on window resize
+  useEffect(() => {
+    const handleResize = () => {
+      setButtonPosition(pos => {
+        const padding = 24;
+        const buttonSize = 64;
+        return {
+          x: Math.min(pos.x, window.innerWidth - (buttonSize + padding)),
+          y: Math.min(pos.y, window.innerHeight - (buttonSize + padding))
+        };
+      });
+    };
+
+    window.addEventListener('resize', handleResize);
+    window.addEventListener('orientationchange', handleResize);
+
+    return () => {
+      window.removeEventListener('resize', handleResize);
+      window.removeEventListener('orientationchange', handleResize);
+    };
+  }, []);
+
+  // Drag handlers
+  const handlePointerDown = (e: React.PointerEvent) => {
+    if (e.button !== 0) return;
+    e.preventDefault();
+    longPressTimeout.current = setTimeout(() => {
+      setDragging(true);
+      setDragStart({ x: e.clientX, y: e.clientY });
+      setButtonStart({ ...buttonPosition });
+    }, 400); // 400ms long press
+    document.addEventListener('pointerup', handlePointerUp);
+    document.addEventListener('pointermove', handlePointerMove);
+  };
+
+  const handlePointerMove = (e: PointerEvent) => {
+    if (dragging && dragStart && buttonStart) {
+      const dx = e.clientX - dragStart.x;
+      const dy = e.clientY - dragStart.y;
+      const padding = 24;
+      const buttonSize = 64;
+      setButtonPosition({
+        x: Math.max(padding, Math.min(window.innerWidth - (buttonSize + padding), buttonStart.x + dx)),
+        y: Math.max(padding, Math.min(window.innerHeight - (buttonSize + padding), buttonStart.y + dy))
+      });
+    }
+  };
+
+  const handlePointerUp = () => {
+    if (longPressTimeout.current) clearTimeout(longPressTimeout.current);
+    setDragging(false);
+    setDragStart(null);
+    setButtonStart(null);
+    document.removeEventListener('pointerup', handlePointerUp);
+    document.removeEventListener('pointermove', handlePointerMove);
+  };
+
+  const handleClick = () => {
+    if (!dragging) setShowChatbot(true);
+  };
+
+  // Touch events for mobile
+  const handleTouchStart = (e: React.TouchEvent) => {
+    longPressTimeout.current = setTimeout(() => {
+      setDragging(true);
+      setDragStart({ x: e.touches[0].clientX, y: e.touches[0].clientY });
+      setButtonStart({ ...buttonPosition });
+    }, 400);
+    document.addEventListener('touchend', handleTouchEnd);
+    document.addEventListener('touchmove', handleTouchMove);
+  };
+  const handleTouchMove = (e: TouchEvent) => {
+    if (dragging && dragStart && buttonStart) {
+      const dx = e.touches[0].clientX - dragStart.x;
+      const dy = e.touches[0].clientY - dragStart.y;
+      const padding = 24;
+      const buttonSize = 64;
+      setButtonPosition({
+        x: Math.max(padding, Math.min(window.innerWidth - (buttonSize + padding), buttonStart.x + dx)),
+        y: Math.max(padding, Math.min(window.innerHeight - (buttonSize + padding), buttonStart.y + dy))
+      });
+    }
+  };
+  const handleTouchEnd = () => {
+    if (longPressTimeout.current) clearTimeout(longPressTimeout.current);
+    setDragging(false);
+    setDragStart(null);
+    setButtonStart(null);
+    document.removeEventListener('touchend', handleTouchEnd);
+    document.removeEventListener('touchmove', handleTouchMove);
+  };
+
+  // PWA install handler
+  useEffect(() => {
+    if (!showInstallPrompt) return;
+    
+    window.addEventListener('beforeinstallprompt', (e) => {
+      e.preventDefault();
+      setDeferredPrompt(e);
+    });
+  }, [showInstallPrompt]);
+
+  const handleInstall = async () => {
+    if (deferredPrompt) {
+      deferredPrompt.prompt();
+      const { outcome } = await deferredPrompt.userChoice;
+      if (outcome === 'accepted') {
+        setDeferredPrompt(null);
+      }
+    }
+  };
+
   return (
     <>
       {/* Floating Action Buttons */}
-      <div className="fixed bottom-6 right-6 z-40 flex flex-col space-y-4">
-        {/* Call Button */}
-        <button
-          onClick={handleCall}
-          className="w-14 h-14 bg-green-600 hover:bg-green-700 text-white rounded-full shadow-lg hover:shadow-xl transition-all duration-200 transform hover:scale-110 flex items-center justify-center"
-          title="Call +919153737258"
+      {!alwaysOpen && (
+        <div
+          style={{ position: 'fixed', left: buttonPosition.x, top: buttonPosition.y, zIndex: 40 }}
+          className="flex flex-col space-y-4 touch-none select-none"
         >
-          <Phone size={24} />
-        </button>
-
-        {/* Email Button */}
-        <button
-          onClick={handleEmail}
-          className="w-14 h-14 bg-blue-600 hover:bg-blue-700 text-white rounded-full shadow-lg hover:shadow-xl transition-all duration-200 transform hover:scale-110 flex items-center justify-center"
-          title="Email mediokart@zohomail.in"
-        >
-          <Mail size={24} />
-        </button>
-
-        {/* Chatbot Button */}
-        <button
-          onClick={() => setShowChatbot(true)}
-          className="w-14 h-14 bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-700 hover:to-blue-700 text-white rounded-full shadow-lg hover:shadow-xl transition-all duration-200 transform hover:scale-110 flex items-center justify-center"
-          title="Chat with Mediobot"
-        >
-          <div className="relative">
-            <MessageCircle size={24} />
-            <div className="absolute -top-1 -right-1 w-3 h-3 bg-green-400 rounded-full animate-pulse"></div>
-          </div>
-        </button>
-      </div>
+          {/* Chatbot Button Only */}
+          <button
+            ref={buttonRef}
+            onPointerDown={handlePointerDown}
+            onPointerUp={handlePointerUp}
+            onClick={handleClick}
+            onTouchStart={handleTouchStart}
+            onTouchEnd={handleTouchEnd}
+            className={`w-16 h-16 p-0 m-0 bg-transparent rounded-full flex items-center justify-center transition-all duration-200 transform ${dragging ? 'scale-110' : ''} cursor-pointer`}
+            title="Chat with Mediobot"
+            style={{ touchAction: 'none', userSelect: 'none', boxShadow: 'none', border: 'none' }}
+          >
+            <div className="relative w-16 h-16 flex items-center justify-center">
+              <img src="/MEDIOBOTFLOAT.png" alt="Mediobot" className="w-16 h-16 object-contain" draggable="false" />
+            </div>
+          </button>
+        </div>
+      )}
 
       {/* Chatbot Modal */}
       {showChatbot && (
-        <div className="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center p-4">
-          <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-2xl w-full max-w-md h-[600px] flex flex-col">
+        <div className={`fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex ${(forceFullPreview || fullPreview) ? 'items-stretch justify-stretch p-0' : 'items-center justify-center p-4'}`}>
+          <div className={`bg-white dark:bg-gray-800 shadow-2xl flex flex-col ${(forceFullPreview || fullPreview) ? 'rounded-none w-full h-full max-w-full max-h-full' : 'rounded-2xl w-full max-w-md h-[600px]'}`}>
             {/* Header */}
             <div className="flex items-center justify-between p-4 border-b border-gray-200 dark:border-gray-700">
               <div className="flex items-center space-x-3">
-                <div className="w-10 h-10 bg-gradient-to-r from-purple-600 to-blue-600 rounded-full flex items-center justify-center relative">
-                  <MessageCircle className="w-6 h-6 text-white" />
-                  <div className="absolute -bottom-1 -right-1 w-3 h-3 bg-green-400 rounded-full border-2 border-white"></div>
+                <div className="w-10 h-10 flex items-center justify-center relative overflow-hidden bg-transparent p-0 m-0" style={{boxShadow:'none',border:'none'}}>
+                  <img src="/MEDIOBOTFLOAT.png" alt="Mediobot" className="w-10 h-10 object-contain" draggable="false" />
                 </div>
                 <div>
                   <h3 className="font-semibold text-gray-900 dark:text-white">Mediobot</h3>
@@ -352,6 +554,20 @@ Remember: Your primary goal is to be helpful while ensuring user safety by never
                 </div>
               </div>
               <div className="flex items-center space-x-2">
+                {/* Full Preview Toggle */}
+                {!forceFullPreview && (
+                  <button
+                    onClick={() => setFullPreview((prev) => !prev)}
+                    className="p-2 rounded-lg bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-600 transition-colors"
+                    title={fullPreview ? (language === 'hi' ? 'पॉपअप मोड' : 'Popup Mode') : (language === 'hi' ? 'फुल प्रीव्यू' : 'Full Preview')}
+                  >
+                    {fullPreview ? (
+                      <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 19V6h13M9 6L3 12l6 6" /></svg>
+                    ) : (
+                      <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><rect x="4" y="4" width="16" height="16" rx="2" strokeWidth={2} stroke="currentColor" fill="none" /></svg>
+                    )}
+                  </button>
+                )}
                 {/* Language Selector */}
                 <div className="relative">
                   <button
@@ -361,7 +577,6 @@ Remember: Your primary goal is to be helpful while ensuring user safety by never
                   >
                     <Globe size={16} />
                   </button>
-                  
                   {showLanguageMenu && (
                     <div className="absolute top-full right-0 mt-1 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-600 rounded-lg shadow-lg z-10 min-w-[120px]">
                       {languages.map((lang) => (
@@ -411,7 +626,7 @@ Remember: Your primary goal is to be helpful while ensuring user safety by never
                 </div>
 
                 <button
-                  onClick={() => setShowChatbot(false)}
+                  onClick={() => { setShowChatbot(false); setFullPreview(false); }}
                   className="text-gray-400 hover:text-gray-600 dark:hover:text-gray-300 transition-colors"
                 >
                   <X size={20} />

@@ -20,6 +20,11 @@ import PreOrder from './pages/PreOrder';
 import Profile from './pages/Profile';
 import Dashboard from './pages/Dashboard';
 import Settings from './pages/Settings';
+import MyDevices from './pages/MyDevices';
+import AIHealthAssistant from './pages/AIHealthAssistant';
+import Appointments from './pages/Appointments';
+import Orders from './pages/Orders';
+import LearningCenter from './pages/LearningCenter';
 
 function App() {
   return (
@@ -45,6 +50,11 @@ function App() {
                 <Route path="/profile" element={<Profile />} />
                 <Route path="/dashboard" element={<Dashboard />} />
                 <Route path="/settings" element={<Settings />} />
+                <Route path="/my-devices" element={<MyDevices />} />
+                <Route path="/ai-health-assistant" element={<AIHealthAssistant />} />
+                <Route path="/appointments" element={<Appointments />} />
+                <Route path="/orders" element={<Orders />} />
+                <Route path="/learning-center" element={<LearningCenter />} />
               </Routes>
             </main>
             <Footer />
