@@ -44,10 +44,23 @@ const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose, mode, onModeChan
   const [phoneStep, setPhoneStep] = useState<'phone' | 'verification'>('phone');
 
   useEffect(() => {
-    if (isOpen && authMethod === 'phone') {
-      setupRecaptcha('recaptcha-container');
+    // Set up reCAPTCHA when the modal opens and authMethod is phone
+    if (isOpen && authMethod === 'phone' && phoneStep === 'phone') {
+      try {
+        setupRecaptcha('recaptcha-container');
+      } catch (error) {
+        console.error('Failed to setup reCAPTCHA:', error);
+        setError('Failed to initialize phone authentication. Please try again.');
+      }
     }
-  }, [isOpen, authMethod, setupRecaptcha]);
+
+    // Cleanup when modal closes or auth method changes
+    return () => {
+      setPhoneStep('phone');
+      setFormData(prev => ({ ...prev, phoneNumber: '', verificationCode: '' }));
+      setError('');
+    };
+  }, [isOpen, authMethod, phoneStep]);
 
   if (!isOpen) return null;
 
@@ -111,9 +124,17 @@ const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose, mode, onModeChan
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    
-    if (!validateForm()) return;
 
+    if (authMethod === 'phone') {
+      if (phoneStep === 'phone') {
+        await handlePhoneSubmit();
+      } else {
+        await handleVerificationSubmit();
+      }
+      return;
+    }
+
+    if (!validateForm()) return;
     setIsLoading(true);
     setError('');
     
@@ -126,18 +147,6 @@ const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose, mode, onModeChan
           await login(formData.email, formData.password, acceptedTerms);
           setSuccess('Logged in successfully! Welcome back.');
         }
-      } else if (authMethod === 'phone') {
-        if (phoneStep === 'phone') {
-          const fullPhoneNumber = selectedCountryCode + formData.phoneNumber;
-          await loginWithPhone(fullPhoneNumber, acceptedTerms);
-          setPhoneStep('verification');
-          setSuccess('Verification code sent to your phone!');
-          setIsLoading(false);
-          return;
-        } else {
-          await verifyPhoneCode(formData.verificationCode);
-          setSuccess('Phone verified successfully! Welcome to Mediokart.');
-        }
       } else if (authMethod === 'google') {
         await loginWithGoogle(acceptedTerms);
         setSuccess('Logged in with Google successfully!');
@@ -149,7 +158,6 @@ const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose, mode, onModeChan
       setTimeout(() => {
         setFormData({ name: '', email: '', password: '', confirmPassword: '', phoneNumber: '', verificationCode: '' });
         setSuccess('');
-        setPhoneStep('phone');
         onClose();
       }, 1500);
     } catch (error: any) {
@@ -217,6 +225,62 @@ const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose, mode, onModeChan
   const handleAuthMethodChange = (method: 'email' | 'phone' | 'google' | 'anonymous') => {
     setAuthMethod(method);
     resetForm();
+  };
+
+  const handlePhoneSubmit = async () => {
+    if (!validateForm()) return;
+    
+    setIsLoading(true);
+    setError('');
+    
+    try {
+      const fullPhoneNumber = selectedCountryCode + formData.phoneNumber.replace(/\D/g, '');
+      await loginWithPhone(fullPhoneNumber, acceptedTerms);
+      setPhoneStep('verification');
+      setSuccess('Verification code sent to your phone!');
+    } catch (error: any) {
+      console.error('Phone auth error:', error);
+      if (error.code === 'auth/invalid-phone-number') {
+        setError('Please enter a valid phone number');
+      } else if (error.code === 'auth/too-many-requests') {
+        setError('Too many attempts. Please try again later.');
+      } else if (error.code === 'auth/internal-error') {
+        setError('Authentication failed. Please refresh the page and try again.');
+      } else {
+        setError(error.message || 'Failed to send verification code. Please try again.');
+      }
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const handleVerificationSubmit = async () => {
+    if (!validateForm()) return;
+    
+    setIsLoading(true);
+    setError('');
+    
+    try {
+      await verifyPhoneCode(formData.verificationCode);
+      setSuccess('Phone verified successfully! Welcome to Mediokart.');
+      setTimeout(() => {
+        setFormData(prev => ({ ...prev, phoneNumber: '', verificationCode: '' }));
+        setPhoneStep('phone');
+        onClose();
+      }, 1500);
+    } catch (error: any) {
+      console.error('Verification error:', error);
+      if (error.code === 'auth/invalid-verification-code') {
+        setError('Invalid verification code. Please try again.');
+      } else if (error.code === 'auth/code-expired') {
+        setError('Verification code has expired. Please request a new one.');
+        setPhoneStep('phone');
+      } else {
+        setError('Failed to verify code. Please try again.');
+      }
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   return (

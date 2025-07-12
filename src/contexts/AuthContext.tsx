@@ -140,18 +140,32 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   };
 
   const setupRecaptcha = (elementId: string) => {
-    if (recaptchaVerifier) {
-      recaptchaVerifier.clear();
-    }
-
-    const verifier = new RecaptchaVerifier(auth, elementId, {
-      size: 'invisible',
-      callback: () => {
-        // reCAPTCHA solved
+    try {
+      // Clear any existing reCAPTCHA instance
+      if (recaptchaVerifier) {
+        recaptchaVerifier.clear();
       }
-    });
 
-    setRecaptchaVerifier(verifier);
+      const verifier = new RecaptchaVerifier(auth, elementId, {
+        size: 'invisible',
+        callback: () => {
+          // reCAPTCHA solved, allow signInWithPhoneNumber
+          console.log('reCAPTCHA verified');
+        },
+        'expired-callback': () => {
+          // Reset the reCAPTCHA
+          console.log('reCAPTCHA expired');
+          setupRecaptcha(elementId);
+        }
+      });
+
+      // Render the reCAPTCHA
+      verifier.render();
+      setRecaptchaVerifier(verifier);
+    } catch (error) {
+      console.error('Error setting up reCAPTCHA:', error);
+      throw new Error('Failed to set up phone authentication. Please try again.');
+    }
   };
 
   const loginWithPhone = async (phoneNumber: string, acceptedTerms: boolean): Promise<ConfirmationResult> => {
@@ -163,9 +177,22 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       throw new Error('reCAPTCHA not initialized');
     }
 
-    const confirmation = await signInWithPhoneNumber(auth, phoneNumber, recaptchaVerifier);
-    setConfirmationResult(confirmation);
-    return confirmation;
+    try {
+      // Format the phone number to E.164 format
+      const formattedPhone = phoneNumber.startsWith('+') ? phoneNumber : `+${phoneNumber}`;
+      
+      const confirmation = await signInWithPhoneNumber(auth, formattedPhone, recaptchaVerifier);
+      setConfirmationResult(confirmation);
+      return confirmation;
+    } catch (error: any) {
+      console.error('Phone auth error:', error);
+      // Clear the reCAPTCHA on error
+      if (recaptchaVerifier) {
+        recaptchaVerifier.clear();
+        setRecaptchaVerifier(null);
+      }
+      throw error;
+    }
   };
 
   const verifyPhoneCode = async (code: string) => {
