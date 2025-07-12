@@ -8,6 +8,7 @@ interface FloatingButtonsProps {
   alwaysOpen?: boolean;
   forceFullPreview?: boolean;
   showInstallPrompt?: boolean;
+  hideFloating?: boolean;
 }
 
 const GUEST_CHAT_LIMIT = 2;
@@ -15,11 +16,20 @@ const GUEST_CHAT_LIMIT = 2;
 const FloatingButtons: React.FC<FloatingButtonsProps> = ({ 
   alwaysOpen = false, 
   forceFullPreview = false,
-  showInstallPrompt = false 
+  showInstallPrompt = false,
+  hideFloating = false
 }) => {
   // State
   const { currentUser, userData, loginAnonymously } = useAuth();
   const [showChatbot, setShowChatbot] = useState(alwaysOpen);
+
+  // Set initial chatbot visibility
+  useEffect(() => {
+    if (alwaysOpen) {
+      setShowChatbot(true);
+    }
+  }, [alwaysOpen]);
+
   const [fullPreview, setFullPreview] = useState(forceFullPreview);
   const [messages, setMessages] = useState<Array<{id: string, text: string, sender: 'user' | 'bot', timestamp: Date, image?: string, caption?: string}>>([
     {
@@ -118,106 +128,101 @@ const FloatingButtons: React.FC<FloatingButtonsProps> = ({
   const sendMessageToGemini = async (message: string, imageData?: string, caption?: string) => {
     const { mediokartInfo } = await import('../data/mediokartInfo');
     
-    const systemPrompt = language === 'hi' 
-      ? `आप Mediobot हैं, भारत के लिए अमन कुमार हैप्पी द्वारा बनाया गया एक AI स्वास्थ्य सहायक।
+    // Add retry logic
+    const maxRetries = 3;
+    let attempt = 0;
+
+    while (attempt < maxRetries) {
+      try {
+        const systemPrompt = language === 'hi' 
+          ? `आप Mediobot हैं, भारत के लिए अमन कुमार हैप्पी द्वारा बनाया गया एक AI स्वास्थ्य सहायक।
 
 महत्वपूर्ण सुरक्षा नियम:
-- कभी भी दवाएं या दवाइयां न लिखें
-- कभी भी विशिष्ट चिकित्सा निदान न दें
-- गंभीर लक्षणों के लिए हमेशा डॉक्टर से सलाह लेने की सिफारिश करें
-- केवल बुनियादी, सामान्य स्वास्थ्य मार्गदर्शन प्रदान करें
-
-ब्रांडिंग:
-- यदि कोई पूछे कि आपको किसने बनाया या कौन सी तकनीक आपको शक्ति देती है, तो कहें: "Mediobot भारत के लिए अमन कुमार हैप्पी द्वारा बनाया गया है"
+${message}
+${caption ? `कैप्शन: ${caption}` : ''}
 
 MEDIOKART जानकारी:
-${JSON.stringify(mediokartInfo, null, 2)}
-
-उपयोगकर्ता संदेश: ${message}
-${imageData ? `उपयोगकर्ता ने एक छवि साझा की है${caption ? ` इस कैप्शन के साथ: ${caption}` : ''} - यदि यह चिकित्सा/स्वास्थ्य संबंधी दिखती है तो इसका विश्लेषण करें, लेकिन विशिष्ट चिकित्सा सलाह न दें।` : ''}
-
-याद रखें: आपका मुख्य लक्ष्य पेशेवर चिकित्सा सलाह को कभी भी प्रतिस्थापित न करते हुए उपयोगकर्ता सुरक्षा सुनिश्चित करना है।`
-      : `You are Mediobot, an AI health assistant built by Aman Kumar Happy for India. 
+${JSON.stringify(mediokartInfo, null, 2)}`
+          : `You are Mediobot, an AI health assistant built by Aman Kumar Happy for India.
 
 CRITICAL SAFETY RULES:
-- NEVER prescribe drugs or medications
-- NEVER provide specific medical diagnoses
-- ALWAYS recommend consulting a doctor for serious symptoms
-- Only provide basic, general health guidance
-- If asked about serious symptoms, immediately suggest seeing a healthcare professional
-
-BRANDING:
-- If anyone asks who built you or what tech powers you, say: "Mediobot is built by Aman Kumar Happy for India"
-- Never mention Gemini, Google, or other AI providers
-- Always identify as Mediobot
+${message}
+${caption ? `Caption: ${caption}` : ''}
 
 MEDIOKART INFORMATION:
-${JSON.stringify(mediokartInfo, null, 2)}
+${JSON.stringify(mediokartInfo, null, 2)}`;
 
-USER MESSAGE: ${message}
-${imageData ? `USER HAS SHARED AN IMAGE${caption ? ` with caption: ${caption}` : ''} - analyze it if it appears to be medical/health related, but do not provide specific medical advice.` : ''}
+        // Add timeout to the fetch request
+        const controller = new AbortController();
+        const timeout = setTimeout(() => controller.abort(), 30000); // 30 second timeout
 
-Remember: Your primary goal is to be helpful while ensuring user safety by never replacing professional medical advice.`;
-
-    try {
-      const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=AIzaSyCPD7VY6Pub9DES-uJa09QmDms8v8EAvrY`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          contents: [{
-            parts: imageData 
-              ? [
-                  { text: systemPrompt },
-                  {
-                    inline_data: {
-                      mime_type: "image/jpeg",
-                      data: imageData
-                    }
-                  }
-                ]
-              : [{ text: systemPrompt }]
-          }],
-          generationConfig: {
-            temperature: 0.7,
-            topK: 40,
-            topP: 0.95,
-            maxOutputTokens: 1024,
+        const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=AIzaSyCPD7VY6Pub9DES-uJa09QmDms8v8EAvrY`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
           },
-          safetySettings: [
-            {
-              category: "HARM_CATEGORY_HARASSMENT",
-              threshold: "BLOCK_MEDIUM_AND_ABOVE"
+          body: JSON.stringify({
+            contents: [{
+              parts: imageData 
+                ? [
+                    { text: systemPrompt },
+                    {
+                      inline_data: {
+                        mime_type: "image/jpeg",
+                        data: imageData
+                      }
+                    }
+                  ]
+                : [{ text: systemPrompt }]
+            }],
+            generationConfig: {
+              temperature: 0.7,
+              topK: 40,
+              topP: 0.95,
+              maxOutputTokens: 1024,
             },
-            {
-              category: "HARM_CATEGORY_HATE_SPEECH", 
-              threshold: "BLOCK_MEDIUM_AND_ABOVE"
-            },
-            {
-              category: "HARM_CATEGORY_SEXUALLY_EXPLICIT",
-              threshold: "BLOCK_MEDIUM_AND_ABOVE"
-            },
-            {
-              category: "HARM_CATEGORY_DANGEROUS_CONTENT",
-              threshold: "BLOCK_MEDIUM_AND_ABOVE"
-            }
-          ]
-        })
-      });
+            safetySettings: [
+              {
+                category: "HARM_CATEGORY_HARASSMENT",
+                threshold: "BLOCK_MEDIUM_AND_ABOVE"
+              },
+              {
+                category: "HARM_CATEGORY_HATE_SPEECH", 
+                threshold: "BLOCK_MEDIUM_AND_ABOVE"
+              },
+              {
+                category: "HARM_CATEGORY_SEXUALLY_EXPLICIT",
+                threshold: "BLOCK_MEDIUM_AND_ABOVE"
+              },
+              {
+                category: "HARM_CATEGORY_DANGEROUS_CONTENT",
+                threshold: "BLOCK_MEDIUM_AND_ABOVE"
+              }
+            ]
+          }),
+          signal: controller.signal
+        });
 
-      const data = await response.json();
-      
-      if (data.candidates && data.candidates[0] && data.candidates[0].content) {
-        return data.candidates[0].content.parts[0].text;
-      } else {
-        throw new Error('Invalid response from AI');
+        clearTimeout(timeout);
+
+        const data = await response.json();
+        
+        if (data.candidates && data.candidates[0] && data.candidates[0].content) {
+          return data.candidates[0].content.parts[0].text;
+        } else {
+          throw new Error('Invalid response from AI');
+        }
+      } catch (error) {
+        attempt++;
+        if (attempt === maxRetries) {
+          console.error('Error calling Gemini API:', error);
+          return language === 'hi' 
+            ? "मुझे खेद है, कनेक्शन में समस्या है। कृपया अपना नेटवर्क कनेक्शन जांचें और पुनः प्रयास करें। आपातकालीन स्थिति में +919153737258 पर कॉल करें।"
+            : "I apologize, there seems to be a connection issue. Please check your network connection and try again. For emergencies, call +919153737258.";
+        }
+        // Wait before retrying (exponential backoff)
+        await new Promise(resolve => setTimeout(resolve, Math.min(1000 * Math.pow(2, attempt), 5000)));
       }
-    } catch (error) {
-      console.error('Error calling Gemini API:', error);
-      return language === 'hi' 
-        ? "मुझे खुशी है कि मैं अभी कनेक्ट करने में परेशानी हो रही है। तत्काल चिकित्सा चिंताओं के लिए, कृपया किसी स्वास्थ्य पेशेवर से संपर्क करें या आपातकालीन सेवाओं को कॉल करें। आप Mediokart से सीधे +919153737258 पर भी संपर्क कर सकते हैं।"
-        : "I apologize, but I'm having trouble connecting right now. For immediate medical concerns, please contact a healthcare professional or call emergency services. You can also reach Mediokart directly at +919153737258.";
     }
   };
 
@@ -227,10 +232,37 @@ Remember: Your primary goal is to be helpful while ensuring user safety by never
     // Guest chat limit logic
     if (!currentUser || currentUser.isAnonymous) {
       if (guestChats >= GUEST_CHAT_LIMIT) {
+        // Add a system message about login requirement
+        const systemMessage = {
+          id: Date.now().toString(),
+          text: language === 'hi' 
+            ? "अधिक चैट करने के लिए कृपया लॉगिन करें। आपका डेटा सुरक्षित रहेगा और आप अपना चैट इतिहास देख सकेंगे।"
+            : "Please login to continue chatting. Your data will be secure and you'll be able to see your chat history.",
+          sender: 'bot' as const,
+          timestamp: new Date()
+        };
+        setMessages(prev => [...prev, systemMessage]);
+        setCurrentMessageIndex(prev => prev + 1);
         setShowAuthModal(true);
         return;
       }
       setGuestChats((prev) => prev + 1);
+
+      // Show remaining messages count
+      if (guestChats === GUEST_CHAT_LIMIT - 1) {
+        setTimeout(() => {
+          const warningMessage = {
+            id: Date.now().toString(),
+            text: language === 'hi' 
+              ? "यह आपका अंतिम संदेश है। कृपया जारी रखने के लिए लॉगिन करें।"
+              : "This is your last message. Please login to continue.",
+            sender: 'bot' as const,
+            timestamp: new Date()
+          };
+          setMessages(prev => [...prev, warningMessage]);
+          setCurrentMessageIndex(prev => prev + 1);
+        }, 1000);
+      }
     }
 
     const userMessage = {
@@ -512,7 +544,7 @@ Remember: Your primary goal is to be helpful while ensuring user safety by never
   return (
     <>
       {/* Floating Action Buttons */}
-      {!alwaysOpen && (
+      {!alwaysOpen && !hideFloating && (
         <div
           style={{ position: 'fixed', left: buttonPosition.x, top: buttonPosition.y, zIndex: 40 }}
           className="flex flex-col space-y-4 touch-none select-none"
@@ -743,25 +775,27 @@ Remember: Your primary goal is to be helpful while ensuring user safety by never
               </div>
 
               {/* Message Input */}
-              <div className="flex space-x-2">
-                <input
-                  type="text"
-                  value={inputMessage}
-                  onChange={(e) => setInputMessage(e.target.value)}
-                  onKeyPress={(e) => e.key === 'Enter' && !showImageCaption && handleSendMessage()}
-                  placeholder={language === 'hi' 
-                    ? 'लक्षण, स्वास्थ्य सुझाव, या Mediokart के बारे में पूछें...' 
-                    : 'Ask about symptoms, health tips, or Mediokart...'
-                  }
-                  disabled={isLoading || showImageCaption}
-                  className="flex-1 px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent dark:bg-gray-700 dark:text-white transition-colors disabled:opacity-50"
-                />
+              <div className="flex space-x-2 items-center">
+                <div className="flex-1 relative">
+                  <input
+                    type="text"
+                    value={inputMessage}
+                    onChange={(e) => setInputMessage(e.target.value)}
+                    onKeyPress={(e) => e.key === 'Enter' && !showImageCaption && handleSendMessage()}
+                    placeholder={language === 'hi' 
+                      ? 'लक्षण, स्वास्थ्य सुझाव, या Mediokart के बारे में पूछें...' 
+                      : 'Ask about symptoms, health tips, or Mediokart...'
+                    }
+                    disabled={isLoading || showImageCaption}
+                    className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent dark:bg-gray-700 dark:text-white transition-colors disabled:opacity-50 text-base"
+                  />
+                </div>
                 
-                {/* Voice Input Button */}
+                {/* Voice Input Button - Hidden on small screens */}
                 <button
                   onClick={isListening ? stopVoiceRecognition : startVoiceRecognition}
                   disabled={isLoading || showImageCaption}
-                  className={`p-2 rounded-lg transition-colors disabled:opacity-50 ${
+                  className={`hidden sm:block p-2 rounded-lg transition-colors disabled:opacity-50 ${
                     isListening 
                       ? 'bg-red-600 hover:bg-red-700 text-white animate-pulse' 
                       : 'bg-gray-100 dark:bg-gray-700 hover:bg-gray-200 dark:hover:bg-gray-600 text-gray-700 dark:text-gray-300'
@@ -771,10 +805,11 @@ Remember: Your primary goal is to be helpful while ensuring user safety by never
                   {isListening ? <MicOff size={20} /> : <Mic size={20} />}
                 </button>
 
+                {/* Send Button - Always visible */}
                 <button
                   onClick={handleSendMessage}
                   disabled={(!inputMessage.trim() && !pendingImage) || isLoading || showImageCaption}
-                  className="bg-purple-600 hover:bg-purple-700 text-white p-2 rounded-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                  className="bg-purple-600 hover:bg-purple-700 text-white p-2 rounded-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed min-w-[40px] flex items-center justify-center"
                 >
                   <Send size={20} />
                 </button>

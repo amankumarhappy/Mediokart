@@ -5,35 +5,87 @@ const AIHealthAssistant: React.FC = () => {
   const [showChat, setShowChat] = useState(false);
 
   return (
-    <div className="relative min-h-screen bg-gray-50 dark:bg-gray-900 flex flex-col items-center justify-center p-4 z-0">
-      <div className="relative bg-white dark:bg-gray-800 rounded-2xl shadow-xl p-8 flex flex-col items-center w-full max-w-md sm:max-w-lg md:max-w-xl lg:max-w-2xl xl:max-w-3xl z-10">
-        <div className="flex flex-col items-center w-full mb-4">
-          <div className="relative w-24 h-24 sm:w-28 sm:h-28 md:w-32 md:h-32 lg:w-36 lg:h-36 xl:w-40 xl:h-40 flex items-center justify-center rounded-full bg-white dark:bg-gray-700 shadow-lg mb-4 z-20">
-            <img
-              src="/MEDIOBOTFLOAT.png"
-              alt="Mediobot Logo"
-              className="w-20 h-20 sm:w-24 sm:h-24 md:w-28 md:h-28 lg:w-32 lg:h-32 xl:w-36 xl:h-36 object-contain"
-            />
+    <div className="min-h-screen bg-gray-50 dark:bg-gray-900">
+      {/* Main Content */}
+      <div className="container mx-auto px-4 py-8">
+        <div className="text-center mb-8">
+          <h1 className="text-4xl font-bold text-gray-900 dark:text-white mb-4">
+            AI Health Assistant
+          </h1>
+          <p className="text-lg text-gray-600 dark:text-gray-300 max-w-2xl mx-auto">
+            Your personal health companion powered by advanced AI. Get instant health guidance, symptom analysis, and medical information.
+          </p>
+        </div>
+
+        {/* Mediobot Launch Button */}
+        {!showChat && (
+          <div className="flex flex-col items-center mt-8">
+            <button
+              onClick={() => setShowChat(true)}
+              className="flex items-center space-x-4 bg-white dark:bg-gray-800 rounded-xl p-6 shadow-lg hover:shadow-xl transition-all duration-300 group"
+            >
+              <div className="w-16 h-16 relative">
+                <img
+                  src="/MEDIOBOTFLOAT.png"
+                  alt="Mediobot"
+                  className="w-full h-full object-contain group-hover:scale-110 transition-transform duration-300"
+                />
+              </div>
+              <div className="text-left">
+                <h3 className="text-xl font-semibold text-gray-900 dark:text-white">
+                  Chat with Mediobot
+                </h3>
+                <p className="text-gray-600 dark:text-gray-300">
+                  Get instant health guidance and answers to your medical queries
+                </p>
+              </div>
+            </button>
+          </div>
+        )}
+
+        {/* Features Grid */}
+        <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8 mt-12">
+          <div className="bg-white dark:bg-gray-800 p-6 rounded-xl shadow-md">
+            <h3 className="text-xl font-semibold text-gray-900 dark:text-white mb-3">
+              Symptom Analysis
+            </h3>
+            <p className="text-gray-600 dark:text-gray-300">
+              Get instant analysis of your symptoms and understand potential causes
+            </p>
+          </div>
+          <div className="bg-white dark:bg-gray-800 p-6 rounded-xl shadow-md">
+            <h3 className="text-xl font-semibold text-gray-900 dark:text-white mb-3">
+              Health Information
+            </h3>
+            <p className="text-gray-600 dark:text-gray-300">
+              Access reliable medical information and health tips
+            </p>
+          </div>
+          <div className="bg-white dark:bg-gray-800 p-6 rounded-xl shadow-md">
+            <h3 className="text-xl font-semibold text-gray-900 dark:text-white mb-3">
+              24/7 Availability
+            </h3>
+            <p className="text-gray-600 dark:text-gray-300">
+              Get health guidance anytime, anywhere with our AI assistant
+            </p>
           </div>
         </div>
-        <h1 className="text-3xl md:text-4xl font-bold text-gray-900 dark:text-white mb-4 text-center font-sans">
-          AI Health Assistant
-        </h1>
-        <p className="text-gray-700 dark:text-gray-300 mb-8 text-center font-sans text-base md:text-lg max-w-2xl">
-          Your AI-powered health assistant for India. Ask about symptoms, get general health tips, or learn more about Mediokart services.
-        </p>
-        <button
-          onClick={() => setShowChat(true)}
-          className="inline-flex items-center px-6 py-4 bg-blue-600 hover:bg-blue-700 text-white rounded-xl transition-all duration-200 text-lg font-semibold shadow-lg hover:shadow-xl w-full max-w-xs justify-center transform hover:scale-105"
-        >
-          <img src="/MEDIOBOTFLOAT.png" alt="Mediobot" className="w-8 h-8 mr-3" />
-          Chat with Mediobot
-        </button>
-      </div>
-      {showChat && (
-        <div className="fixed inset-0 z-50">
-          <FloatingButtons alwaysOpen forceFullPreview showInstallPrompt />
+
+        {/* Important Notice */}
+        <div className="mt-12 bg-yellow-50 dark:bg-yellow-900/20 border border-yellow-200 dark:border-yellow-700 p-4 rounded-lg">
+          <p className="text-yellow-800 dark:text-yellow-200 text-center">
+            ⚠️ For emergencies, always call emergency services. Mediobot provides general guidance only.
+          </p>
         </div>
+      </div>
+
+      {/* Floating Button Component */}
+      {showChat && (
+        <FloatingButtons
+          alwaysOpen={true}
+          forceFullPreview={true}
+          hideFloating={true}
+        />
       )}
     </div>
   );
