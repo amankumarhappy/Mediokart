@@ -67,7 +67,7 @@ const FloatingButtons: React.FC<FloatingButtonsProps> = ({
   const [inputMessage, setInputMessage] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const [isListening, setIsListening] = useState(false);
-  const [language, setLanguage] = useState<'en' | 'hi'>('en');
+  const [language, setLanguage] = useState<'en' | 'hi' | 'hinglish'>('en');
   const [showLanguageMenu, setShowLanguageMenu] = useState(false);
   const [currentMessageIndex, setCurrentMessageIndex] = useState(messages.length - 1);
   const [imageCaption, setImageCaption] = useState('');
@@ -125,37 +125,71 @@ const FloatingButtons: React.FC<FloatingButtonsProps> = ({
     }
   };
 
+  // Helper: Check if query is medical/healthcare/mediokart/aman kumar happy
+  const isMedicalQuery = (msg: string) => {
+    const keywords = [
+      'health', 'medical', 'doctor', 'medicine', 'symptom', 'treatment', 'disease', 'illness', 'injury', 'first aid', 'prescription', 'diagnosis', 'hospital', 'clinic', 'wellness', 'fitness', 'aura', 'aurabox', 'mediokart', 'mediobot', 'aman kumar happy', 'medication', 'emergency', 'pharmacy', 'vitals', 'blood', 'pressure', 'sugar', 'diabetes', 'cardiac', 'asthma', 'covid', 'fever', 'pain', 'rash', 'infection', 'scan', 'report', 'test', 'xray', 'mri', 'ct', 'healthcare', 'ambulance', 'appointment', 'consult', 'doctor', 'nurse', 'paramedic', 'injury', 'fracture', 'burn', 'wound', 'allergy', 'vaccine', 'vaccination', 'immunization', 'therapy', 'cancer', 'oncology', 'pediatrics', 'gynecology', 'surgery', 'operation', 'mental', 'psychology', 'depression', 'anxiety', 'stress', 'nutrition', 'diet', 'exercise', 'yoga', 'ayurveda', 'homeopathy', 'physiotherapy', 'rehab', 'rehabilitation', 'cardiology', 'orthopedic', 'dermatology', 'skin', 'hair', 'eye', 'vision', 'ear', 'nose', 'throat', 'dental', 'tooth', 'oral', 'mouth', 'covid', 'corona', 'virus', 'infection', 'immunity', 'immunization', 'child', 'baby', 'pregnancy', 'pregnant', 'mother', 'father', 'parent', 'family', 'elderly', 'senior', 'old', 'woman', 'man', 'boy', 'girl', 'child', 'teen', 'adolescent', 'adult', 'senior', 'old', 'wellbeing', 'well-being', 'wellness', 'health tips', 'healthcare tips', 'health query', 'medical query', 'mediokart', 'mediobot', 'aman kumar happy'
+    ];
+    const lowerMsg = msg.toLowerCase();
+    return keywords.some(k => lowerMsg.includes(k));
+  };
+
+  const needsDisclaimer = (query: string, response: string) => {
+    const seriousConditions = [
+      'cancer', 'tumor', 'heart', 'cardiac', 'stroke', 'diabetes', 'kidney', 'liver',
+      'brain', 'surgery', 'emergency', 'bleeding', 'infection', 'covid', 'hiv', 'aids',
+      'depression', 'suicide', 'mental health', 'pregnancy', 'chronic'
+    ];
+    const lowerQuery = query.toLowerCase();
+    const lowerResponse = response.toLowerCase();
+    return seriousConditions.some(condition => 
+      lowerQuery.includes(condition) || lowerResponse.includes(condition)
+    );
+  };
+
   const sendMessageToGemini = async (message: string, imageData?: string, caption?: string) => {
     const { mediokartInfo } = await import('../data/mediokartInfo');
-    
-    // Add retry logic
+    const checkText = [message, caption].filter(Boolean).join(' ');
+    if (!isMedicalQuery(checkText)) {
+      if (language === 'hi') return 'Mediobot केवल मेडिकल या हेल्थकेयर क्वेरी के लिए है।';
+      if (language === 'hinglish') return 'Mediobot sirf medical ya healthcare queries ke liye hai.';
+      return 'Mediobot is only for medical or healthcare queries.';
+    }
+
     const maxRetries = 3;
     let attempt = 0;
-
     while (attempt < maxRetries) {
       try {
-        const systemPrompt = language === 'hi' 
-          ? `आप Mediobot हैं, भारत के लिए अमन कुमार हैप्पी द्वारा बनाया गया एक AI स्वास्थ्य सहायक।
+        let systemPrompt = '';
+        if (language === 'hi') {
+          systemPrompt = `Instruction: आप एक विशेषज्ञ चिकित्सा सहायक हैं। कृपया विस्तृत जानकारी प्रदान करें, जिसमें शामिल हों:
+1. परिभाषा और विवरण
+2. सामान्य लक्षण या प्रभाव
+3. कारण और जोखिम कारक
+4. रोकथाम या स्वास्थ्य टिप्स (यदि लागू हो)
 
-महत्वपूर्ण सुरक्षा नियम:
-${message}
-${caption ? `कैप्शन: ${caption}` : ''}
+क्वेरी: ${message}\n${caption ? `कैप्शन: ${caption}` : ''}\n\nMEDIOKART जानकारी:\n${JSON.stringify(mediokartInfo, null, 2)}`;
+        } else if (language === 'hinglish') {
+          systemPrompt = `Instruction: Aap ek expert medical assistant hain. Detailed information provide karein, jisme ye points shamil hon:
+1. Definition aur description
+2. Common symptoms ya effects
+3. Causes aur risk factors
+4. Prevention ya health tips (if applicable)
 
-MEDIOKART जानकारी:
-${JSON.stringify(mediokartInfo, null, 2)}`
-          : `You are Mediobot, an AI health assistant built by Aman Kumar Happy for India.
+Query: ${message}\n${caption ? `Caption: ${caption}` : ''}\n\nMEDIOKART info:\n${JSON.stringify(mediokartInfo, null, 2)}`;
+        } else {
+          systemPrompt = `Instruction: You are an expert medical assistant. Please provide detailed information including:
+1. Definition and description
+2. Common symptoms or effects
+3. Causes and risk factors
+4. Prevention or health tips (if applicable)
 
-CRITICAL SAFETY RULES:
-${message}
-${caption ? `Caption: ${caption}` : ''}
+Make the response comprehensive yet easy to understand. Use simple language and break down complex terms.
 
-MEDIOKART INFORMATION:
-${JSON.stringify(mediokartInfo, null, 2)}`;
-
-        // Add timeout to the fetch request
+Query: ${message}\n${caption ? `Caption: ${caption}` : ''}\n\nMEDIOKART INFORMATION:\n${JSON.stringify(mediokartInfo, null, 2)}`;
+        }
         const controller = new AbortController();
-        const timeout = setTimeout(() => controller.abort(), 30000); // 30 second timeout
-
+        const timeout = setTimeout(() => controller.abort(), 30000);
         const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=AIzaSyCPD7VY6Pub9DES-uJa09QmDms8v8EAvrY`, {
           method: 'POST',
           headers: {
@@ -202,11 +236,8 @@ ${JSON.stringify(mediokartInfo, null, 2)}`;
           }),
           signal: controller.signal
         });
-
         clearTimeout(timeout);
-
         const data = await response.json();
-        
         if (data.candidates && data.candidates[0] && data.candidates[0].content) {
           return data.candidates[0].content.parts[0].text;
         } else {
@@ -216,11 +247,10 @@ ${JSON.stringify(mediokartInfo, null, 2)}`;
         attempt++;
         if (attempt === maxRetries) {
           console.error('Error calling Gemini API:', error);
-          return language === 'hi' 
-            ? "मुझे खेद है, कनेक्शन में समस्या है। कृपया अपना नेटवर्क कनेक्शन जांचें और पुनः प्रयास करें। आपातकालीन स्थिति में +919153737258 पर कॉल करें।"
-            : "I apologize, there seems to be a connection issue. Please check your network connection and try again. For emergencies, call +919153737258.";
+          if (language === 'hi') return "माफ़ कीजिए, कनेक्शन में समस्या है। कृपया कुछ देर बाद पुनः प्रयास करें।";
+          if (language === 'hinglish') return "Sorry, connection mein problem hai. Thodi der baad try karein.";
+          return "I apologize, there seems to be a connection issue. Please try again in a few moments.";
         }
-        // Wait before retrying (exponential backoff)
         await new Promise(resolve => setTimeout(resolve, Math.min(1000 * Math.pow(2, attempt), 5000)));
       }
     }
@@ -286,50 +316,74 @@ ${JSON.stringify(mediokartInfo, null, 2)}`;
 
     try {
       const botResponse = await sendMessageToGemini(
-        inputMessage || 'Please analyze this image', 
-        imageToSend?.split(',')[1], 
+        inputMessage || 'Please analyze this image',
+        imageToSend?.split(',')[1],
         captionToSend
       );
-      
+
       const botMessage = {
-        id: (Date.now() + 1).toString(),
+        id: Date.now().toString(),
         text: botResponse,
         sender: 'bot' as const,
         timestamp: new Date()
       };
 
+      // Add the bot's response
       setMessages(prev => [...prev, botMessage]);
       setCurrentMessageIndex(prev => prev + 1);
+
+      // Add disclaimer as a separate message after a short delay
+      setTimeout(() => {
+        const disclaimerMessage = {
+          id: (Date.now() + 1).toString(),
+          text: language === 'hi'
+            ? "⚠️ यह जानकारी केवल सामान्य जागरूकता के लिए है और चिकित्सीय सलाह नहीं है। कृपया किसी योग्य स्वास्थ्य पेशेवर से परामर्श करें।"
+            : language === 'hinglish'
+            ? "⚠️ Yeh jankari sirf samanya jagrukta ke liye hai aur medical advice nahi hai. Kripya kisi qualified doctor se salah len."
+            : "⚠️ This information is for general awareness only and does not constitute medical advice. Please consult a qualified healthcare professional.",
+          sender: 'bot' as const,
+          timestamp: new Date()
+        };
+        setMessages(prev => [...prev, disclaimerMessage]);
+        setCurrentMessageIndex(prev => prev + 1);
+      }, 500);
 
       // Save chat to Firestore for logged-in users
       if (currentUser && !currentUser.isAnonymous) {
         const chatsRef = collection(db, 'chats');
-        // Try to find latest chat for this user
-        const q = query(chatsRef, where('uid', '==', currentUser.uid), orderBy('createdAt', 'desc'));
-        const snapshot = await getDocs(q);
-        if (!snapshot.empty) {
-          // Update latest chat
-          const chatDoc = snapshot.docs[0];
-          await updateDoc(chatDoc.ref, {
-            messages: [...messages, userMessage, botMessage],
-            updatedAt: new Date()
-          });
-        } else {
-          // Create new chat
-          await addDoc(chatsRef, {
-            uid: currentUser.uid,
-            messages: [...messages, userMessage, botMessage],
-            createdAt: new Date(),
-            updatedAt: new Date()
-          });
+        try {
+          // Try to find latest chat for this user
+          const q = query(chatsRef, where('uid', '==', currentUser.uid), orderBy('createdAt', 'desc'));
+          const snapshot = await getDocs(q);
+          if (!snapshot.empty) {
+            // Update latest chat
+            const chatDoc = snapshot.docs[0];
+            await updateDoc(chatDoc.ref, {
+              messages: [...messages, userMessage, botMessage],
+              updatedAt: new Date()
+            });
+          } else {
+            // Create new chat
+            await addDoc(chatsRef, {
+              uid: currentUser.uid,
+              messages: [...messages, userMessage, botMessage],
+              createdAt: new Date(),
+              updatedAt: new Date()
+            });
+          }
+        } catch (error) {
+          console.error('Error saving chat to Firestore:', error);
+          // Don't show error to user, just log it
         }
       }
     } catch (error) {
       const errorMessage = {
         id: (Date.now() + 1).toString(),
-        text: language === 'hi' 
-          ? "तकनीकी कठिनाई के लिए मुझे खुशी है। तत्काल चिकित्सा सहायता के लिए, कृपया किसी स्वास्थ्य पेशेवर से संपर्क करें या +919153737258 पर कॉल करें।"
-          : "I apologize for the technical difficulty. For immediate medical assistance, please contact a healthcare professional or call +919153737258.",
+        text: language === 'hi'
+          ? 'कनेक्शन में समस्या है। कृपया कुछ देर बाद पुनः प्रयास करें।'
+          : language === 'hinglish'
+            ? 'Connection mein problem hai. Thodi der baad try karein.'
+            : 'Connection issue. Please try again in a few moments.',
         sender: 'bot' as const,
         timestamp: new Date()
       };
@@ -397,7 +451,8 @@ ${JSON.stringify(mediokartInfo, null, 2)}`;
 
   const languages = [
     { code: 'en', name: 'English', flag: '🇺🇸' },
-    { code: 'hi', name: 'हिंदी', flag: '🇮🇳' }
+    { code: 'hi', name: 'हिंदी', flag: '🇮🇳' },
+    { code: 'hinglish', name: 'Hinglish', flag: '🇮🇳' }
   ];
 
   // Draggable floating button state
@@ -574,17 +629,17 @@ ${JSON.stringify(mediokartInfo, null, 2)}`;
           <div className={`bg-white dark:bg-gray-800 shadow-2xl flex flex-col ${(forceFullPreview || fullPreview) ? 'rounded-none w-full h-full max-w-full max-h-full' : 'rounded-2xl w-full max-w-md h-[600px]'}`}>
             {/* Header */}
             <div className="flex items-center justify-between p-4 border-b border-gray-200 dark:border-gray-700">
-              <div className="flex items-center space-x-3">
-                <div className="w-10 h-10 flex items-center justify-center relative overflow-hidden bg-transparent p-0 m-0" style={{boxShadow:'none',border:'none'}}>
-                  <img src="/MEDIOBOTFLOAT.png" alt="Mediobot" className="w-10 h-10 object-contain" draggable="false" />
-                </div>
-                <div>
-                  <h3 className="font-semibold text-gray-900 dark:text-white">Mediobot</h3>
-                  <p className="text-sm text-gray-500 dark:text-gray-400">
-                    {language === 'hi' ? 'AI स्वास्थ्य सहायक' : 'AI Health Assistant'}
-                  </p>
-                </div>
+            <div className="flex items-center space-x-3">
+              <div className="w-10 h-10 flex items-center justify-center relative overflow-hidden bg-transparent p-0 m-0" style={{boxShadow:'none',border:'none'}}>
+                <img src="/MEDIOBOTFLOAT.png" alt="Mediobot" className="w-10 h-10 object-contain" draggable="false" style={{background:'transparent'}} />
               </div>
+              <div>
+                <h3 className="font-bold text-purple-700 dark:text-purple-300 text-lg">Mediobot</h3>
+                <p className="text-xs text-gray-500 dark:text-gray-400 font-medium">
+                  {language === 'hi' ? 'AI स्वास्थ्य सहायक' : language === 'hinglish' ? 'AI Health Assistant (Hinglish)' : 'AI Health Assistant'}
+                </p>
+              </div>
+            </div>
               <div className="flex items-center space-x-2">
                 {/* Full Preview Toggle */}
                 {!forceFullPreview && (
@@ -667,54 +722,48 @@ ${JSON.stringify(mediokartInfo, null, 2)}`;
             </div>
 
             {/* Messages */}
-            <div className="flex-1 overflow-y-auto p-4 space-y-4">
+            <div className="flex-1 overflow-y-auto p-4 space-y-4 bg-gradient-to-b from-white via-purple-50 to-white dark:from-gray-900 dark:via-gray-800 dark:to-gray-900">
               {messages.map((message, index) => (
                 <div
                   key={message.id}
-                  className={`flex ${message.sender === 'user' ? 'justify-end' : 'justify-start'} ${
-                    index === currentMessageIndex ? 'ring-2 ring-blue-300 dark:ring-blue-600 rounded-lg' : ''
-                  }`}
+                  className={`flex ${message.sender === 'user' ? 'justify-end' : 'justify-start'} ${index === currentMessageIndex ? 'ring-2 ring-purple-300 dark:ring-purple-600 rounded-lg' : ''}`}
                 >
                   <div
-                    className={`max-w-[80%] p-3 rounded-lg ${
+                    className={`max-w-[80%] p-3 rounded-2xl shadow-md ${
                       message.sender === 'user'
-                        ? 'bg-blue-600 text-white'
-                        : 'bg-gray-100 dark:bg-gray-700 text-gray-900 dark:text-white'
-                    }`}
+                        ? 'bg-gradient-to-br from-blue-600 to-purple-600 text-white border-2 border-blue-200 dark:border-blue-800'
+                        : 'bg-white dark:bg-gray-700 text-gray-900 dark:text-white border border-purple-100 dark:border-gray-700'
+                    } animate-fade-in`}
+                    style={{ wordBreak: 'break-word', position: 'relative' }}
                   >
                     {message.image && (
                       <div className="mb-2">
                         <img 
                           src={message.image} 
                           alt="Shared image" 
-                          className="max-w-full h-auto rounded-lg"
+                          className="max-w-full h-auto rounded-lg border border-purple-200 dark:border-purple-700 shadow-sm"
                         />
                         {message.caption && (
                           <p className="text-xs mt-1 opacity-80">{message.caption}</p>
                         )}
                       </div>
                     )}
-                    <p className="text-sm whitespace-pre-wrap">{message.text}</p>
-                    <p className={`text-xs mt-1 ${
-                      message.sender === 'user' ? 'text-blue-100' : 'text-gray-500 dark:text-gray-400'
-                    }`}>
-                      {message.timestamp.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
-                    </p>
+                    <p className="text-base whitespace-pre-wrap font-medium">{message.text}</p>
+                    <span className={`absolute -bottom-5 right-2 text-xs ${message.sender === 'user' ? 'text-blue-100' : 'text-purple-400 dark:text-purple-300'}`}>{message.timestamp.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}</span>
                   </div>
                 </div>
               ))}
-              
               {isLoading && (
                 <div className="flex justify-start">
-                  <div className="bg-gray-100 dark:bg-gray-700 p-3 rounded-lg">
+                  <div className="bg-white dark:bg-gray-700 p-3 rounded-2xl shadow-md border border-purple-100 dark:border-purple-700 animate-pulse">
                     <div className="flex items-center space-x-2">
                       <div className="flex space-x-1">
-                        <div className="w-2 h-2 bg-gray-600 dark:text-gray-300 rounded-full animate-bounce"></div>
-                        <div className="w-2 h-2 bg-gray-600 dark:text-gray-300 rounded-full animate-bounce" style={{ animationDelay: '0.1s' }}></div>
-                        <div className="w-2 h-2 bg-gray-600 dark:text-gray-300 rounded-full animate-bounce" style={{ animationDelay: '0.2s' }}></div>
+                        <div className="w-2 h-2 bg-purple-600 dark:bg-purple-300 rounded-full animate-bounce"></div>
+                        <div className="w-2 h-2 bg-purple-600 dark:bg-purple-300 rounded-full animate-bounce" style={{ animationDelay: '0.1s' }}></div>
+                        <div className="w-2 h-2 bg-purple-600 dark:bg-purple-300 rounded-full animate-bounce" style={{ animationDelay: '0.2s' }}></div>
                       </div>
-                      <span className="text-sm text-gray-600 dark:text-gray-300">
-                        {language === 'hi' ? 'Mediobot सोच रहा है...' : 'Mediobot is thinking...'}
+                      <span className="text-sm text-purple-600 dark:text-purple-300">
+                        {language === 'hi' ? 'Mediobot सोच रहा है...' : language === 'hinglish' ? 'Mediobot soch raha hai...' : 'Mediobot is thinking...'}
                       </span>
                     </div>
                   </div>
@@ -756,21 +805,44 @@ ${JSON.stringify(mediokartInfo, null, 2)}`;
 
             {/* Input Area */}
             <div className="p-4 border-t border-gray-200 dark:border-gray-700">
-              {/* Action Buttons */}
+              {/* Action Buttons & New Chat */}
               <div className="flex space-x-2 mb-3">
                 <button
                   onClick={handleCameraCapture}
                   className="flex-1 bg-gray-100 dark:bg-gray-700 hover:bg-gray-200 dark:hover:bg-gray-600 text-gray-700 dark:text-gray-300 py-2 px-3 rounded-lg text-sm font-medium transition-colors flex items-center justify-center space-x-2"
                 >
                   <Camera size={16} />
-                  <span>{language === 'hi' ? 'कैमरा' : 'Camera'}</span>
+                  <span>{language === 'hi' ? 'कैमरा' : language === 'hinglish' ? 'Camera' : 'Camera'}</span>
                 </button>
                 <button
                   onClick={handleFileUpload}
                   className="flex-1 bg-gray-100 dark:bg-gray-700 hover:bg-gray-200 dark:hover:bg-gray-600 text-gray-700 dark:text-gray-300 py-2 px-3 rounded-lg text-sm font-medium transition-colors flex items-center justify-center space-x-2"
                 >
                   <Upload size={16} />
-                  <span>{language === 'hi' ? 'अपलोड' : 'Upload'}</span>
+                  <span>{language === 'hi' ? 'अपलोड' : language === 'hinglish' ? 'Upload' : 'Upload'}</span>
+                </button>
+                {/* New Chat Button */}
+                <button
+                  onClick={() => {
+                    setMessages([
+                      {
+                        id: '1',
+                        text: language === 'hi'
+                          ? "Hello! मैं Mediobot हूँ, आपका AI स्वास्थ्य सहायक, जिसे Aman Kumar Happy ने भारत के लिए बनाया है. मैं आपकी मेडिकल क्वेरी, लक्षण, और प्रिस्क्रिप्शन में मदद कर सकता हूँ. कैसे मदद करूँ?"
+                          : language === 'hinglish'
+                            ? "Hello! Main Mediobot hoon, aapka AI health assistant, Aman Kumar Happy ne banaya hai. Medical queries, symptoms, ya prescription mein madad chahiye?"
+                            : "Hello! I'm Mediobot, your AI health assistant built by Aman Kumar Happy for India. I can help with basic medical queries, symptom checking, and prescription analysis. How can I assist you today?",
+                        sender: 'bot',
+                        timestamp: new Date()
+                      }
+                    ]);
+                    setCurrentMessageIndex(0);
+                  }}
+                  className="flex-1 bg-gradient-to-br from-purple-500 to-indigo-500 hover:from-purple-600 hover:to-indigo-600 text-white py-2 px-3 rounded-lg text-sm font-bold transition-colors flex items-center justify-center space-x-2 shadow-md border border-purple-200 dark:border-purple-700"
+                  title={language === 'hi' ? 'नई चैट' : language === 'hinglish' ? 'Nayi Chat' : 'New Chat'}
+                >
+                  <span>🆕</span>
+                  <span>{language === 'hi' ? 'नई चैट' : language === 'hinglish' ? 'Nayi Chat' : 'New Chat'}</span>
                 </button>
               </div>
 
@@ -782,29 +854,29 @@ ${JSON.stringify(mediokartInfo, null, 2)}`;
                     value={inputMessage}
                     onChange={(e) => setInputMessage(e.target.value)}
                     onKeyPress={(e) => e.key === 'Enter' && !showImageCaption && handleSendMessage()}
-                    placeholder={language === 'hi' 
-                      ? 'लक्षण, स्वास्थ्य सुझाव, या Mediokart के बारे में पूछें...' 
-                      : 'Ask about symptoms, health tips, or Mediokart...'
+                    placeholder={language === 'hi'
+                      ? 'लक्षण, स्वास्थ्य सुझाव, या Mediokart के बारे में पूछें...'
+                      : language === 'hinglish'
+                        ? 'Symptoms, health tips, ya Mediokart ke baare mein poochho...'
+                        : 'Ask about symptoms, health tips, or Mediokart...'
                     }
                     disabled={isLoading || showImageCaption}
                     className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent dark:bg-gray-700 dark:text-white transition-colors disabled:opacity-50 text-base"
                   />
                 </div>
-                
                 {/* Voice Input Button - Hidden on small screens */}
                 <button
                   onClick={isListening ? stopVoiceRecognition : startVoiceRecognition}
                   disabled={isLoading || showImageCaption}
                   className={`hidden sm:block p-2 rounded-lg transition-colors disabled:opacity-50 ${
-                    isListening 
-                      ? 'bg-red-600 hover:bg-red-700 text-white animate-pulse' 
+                    isListening
+                      ? 'bg-red-600 hover:bg-red-700 text-white animate-pulse'
                       : 'bg-gray-100 dark:bg-gray-700 hover:bg-gray-200 dark:hover:bg-gray-600 text-gray-700 dark:text-gray-300'
                   }`}
-                  title={language === 'hi' ? 'आवाज़ से टाइप करें' : 'Voice typing'}
+                  title={language === 'hi' ? 'आवाज़ से टाइप करें' : language === 'hinglish' ? 'Awaaz se type karo' : 'Voice typing'}
                 >
                   {isListening ? <MicOff size={20} /> : <Mic size={20} />}
                 </button>
-
                 {/* Send Button - Always visible */}
                 <button
                   onClick={handleSendMessage}
@@ -814,12 +886,13 @@ ${JSON.stringify(mediokartInfo, null, 2)}`;
                   <Send size={20} />
                 </button>
               </div>
-
               {/* Disclaimer */}
-              <p className="text-xs text-gray-500 dark:text-gray-400 mt-2 text-center">
-                ⚠️ {language === 'hi' 
+              <p className="text-xs text-purple-600 dark:text-purple-300 mt-2 text-center font-medium">
+                ⚠️ {language === 'hi'
                   ? 'आपातकाल के लिए, आपातकालीन सेवाओं को कॉल करें। Mediobot केवल सामान्य मार्गदर्शन प्रदान करता है।'
-                  : 'For emergencies, call emergency services. Mediobot provides general guidance only.'
+                  : language === 'hinglish'
+                    ? 'Emergency ke liye, emergency services ko call karo. Mediobot sirf general guidance deta hai.'
+                    : 'For emergencies, call emergency services. Mediobot provides general guidance only.'
                 }
               </p>
             </div>
