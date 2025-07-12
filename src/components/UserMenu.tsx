@@ -10,22 +10,40 @@ const UserMenu: React.FC = () => {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const navigate = useNavigate();
 
+  // Logout button component for reuse
+  const LogoutButton = () => (
+    <button
+      onClick={(e) => {
+        e.preventDefault();
+        e.stopPropagation();
+        handleLogout(e);
+      }}
+      className="flex items-center w-full px-4 py-2 text-sm text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors"
+    >
+      <LogOut className="w-4 h-4 mr-2" />
+      Sign Out
+    </button>
+  );
+
   const handleLogout = useCallback(async (e: React.MouseEvent) => {
     e.preventDefault();
     e.stopPropagation();
     
-    // Close menus immediately
+    // Close menus first to avoid any state updates after unmount
     setIsOpen(false);
     setMobileMenuOpen(false);
     
     const loadingToast = toast.loading('Signing out...');
     
     try {
+      // Perform logout
       await logout();
-      // AuthContext will handle the redirect and page reload
+      // The auth context will handle the redirect
     } catch (error) {
       console.error('Logout error:', error);
       toast.error('Failed to sign out. Please try again.');
+      // If there's an error, we can try to force a redirect
+      window.location.href = '/';
     } finally {
       toast.dismiss(loadingToast);
     }
@@ -95,17 +113,6 @@ const UserMenu: React.FC = () => {
         <span>Settings</span>
       </button>
     </>
-  );
-
-  // Logout button component for reuse
-  const LogoutButton = () => (
-    <button
-      onClick={handleLogout}
-      className="flex items-center w-full px-4 py-2 text-sm text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors"
-    >
-      <LogOut className="w-4 h-4 mr-2" />
-      Sign Out
-    </button>
   );
 
   return (

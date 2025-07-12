@@ -13,7 +13,7 @@ const Navbar: React.FC = () => {
     mode: 'login'
   });
   const { theme, toggleTheme } = useTheme();
-  const { currentUser } = useAuth();
+  const { currentUser, logout } = useAuth();
   const location = useLocation();
   const [showAccountMenu, setShowAccountMenu] = useState(false);
 
@@ -115,9 +115,7 @@ const Navbar: React.FC = () => {
                       </Link>
                       <div className="border-t border-gray-200 dark:border-gray-700 my-2"></div>
                       <button
-                        onClick={() => {
-                          if (typeof window !== 'undefined') window.location.href = '/';
-                        }}
+                        onClick={logout}
                         className="flex items-center gap-2 w-full px-3 py-2 rounded-lg text-base font-medium text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-gray-700 transition-colors duration-200"
                       >
                         <LogOut size={18} /> Sign Out
@@ -187,18 +185,15 @@ const Navbar: React.FC = () => {
                       <div className="text-xs font-semibold text-gray-500 dark:text-gray-400 mb-2 pl-1">Account</div>
                       <Link to="/profile" onClick={() => { setIsOpen(false); setShowAccountMenu(false); }} className="flex items-center gap-2 px-3 py-2 rounded-lg text-base font-medium text-gray-700 dark:text-gray-200 hover:bg-blue-50 dark:hover:bg-gray-700 transition-colors duration-200"><User size={18} /> Profile</Link>
                       <Link to="/dashboard" onClick={() => { setIsOpen(false); setShowAccountMenu(false); }} className="flex items-center gap-2 px-3 py-2 rounded-lg text-base font-medium text-gray-700 dark:text-gray-200 hover:bg-blue-50 dark:hover:bg-gray-700 transition-colors duration-200"><LayoutDashboard size={18} /> Dashboard</Link>
-                      <Link to="/my-devices" onClick={() => { setIsOpen(false); setShowAccountMenu(false); }} className="flex items-center gap-2 px-3 py-2 rounded-lg text-base font-medium text-gray-700 dark:text-gray-200 hover:bg-blue-50 dark:hover:bg-gray-700 transition-colors duration-200"><TabletSmartphone size={18} /> My Devices</Link>
-                      <Link to="/ai-health-assistant" onClick={() => { setIsOpen(false); setShowAccountMenu(false); }} className="flex items-center gap-2 px-3 py-2 rounded-lg text-base font-medium text-gray-700 dark:text-gray-200 hover:bg-blue-50 dark:hover:bg-gray-700 transition-colors duration-200"><Bot size={18} /> AI Health Assistant</Link>
-                      <Link to="/appointments" onClick={() => { setIsOpen(false); setShowAccountMenu(false); }} className="flex items-center gap-2 px-3 py-2 rounded-lg text-base font-medium text-gray-700 dark:text-gray-200 hover:bg-blue-50 dark:hover:bg-gray-700 transition-colors duration-200"><Calendar size={18} /> Appointments</Link>
-                      <Link to="/orders" onClick={() => { setIsOpen(false); setShowAccountMenu(false); }} className="flex items-center gap-2 px-3 py-2 rounded-lg text-base font-medium text-gray-700 dark:text-gray-200 hover:bg-blue-50 dark:hover:bg-gray-700 transition-colors duration-200"><ShoppingBag size={18} /> Orders</Link>
+                      <Link to="/my-devices" onClick={() => { setIsOpen(false); setShowAccountMenu(false); }} className="flex items-center gap-2 px-3 py-2 rounded-lg textBase font-medium text-gray-700 dark:text-gray-200 hover:bg-blue-50 dark:hover:bg-gray-700 transition-colors duration-200"><TabletSmartphone size={18} /> My Devices</Link>
+                      <Link to="/ai-health-assistant" onClick={() => { setIsOpen(false); setShowAccountMenu(false); }} className="flex items-center gap-2 px-3 py-2 rounded-lg textBase font-medium text-gray-700 dark:text-gray-200 hover:bg-blue-50 dark:hover:bg-gray-700 transition-colors duration-200"><Bot size={18} /> AI Health Assistant</Link>
+                      <Link to="/appointments" onClick={() => { setIsOpen(false); setShowAccountMenu(false); }} className="flex items-center gap-2 px-3 py-2 rounded-lg textBase font-medium text-gray-700 dark:text-gray-200 hover:bg-blue-50 dark:hover:bg-gray-700 transition-colors duration-200"><Calendar size={18} /> Appointments</Link>
+                      <Link to="/orders" onClick={() => { setIsOpen(false); setShowAccountMenu(false); }} className="flex items-center gap-2 px-3 py-2 rounded-lg textBase font-medium text-gray-700 dark:text-gray-200 hover:bg-blue-50 dark:hover:bg-gray-700 transition-colors duration-200"><ShoppingBag size={18} /> Orders</Link>
                       <Link to="/learning-center" onClick={() => { setIsOpen(false); setShowAccountMenu(false); }} className="flex items-center gap-2 px-3 py-2 rounded-lg textBase font-medium text-gray-700 dark:text-gray-200 hover:bg-blue-50 dark:hover:bg-gray-700 transition-colors duration-200"><BookOpen size={18} /> Learning Center</Link>
                       <Link to="/settings" onClick={() => { setIsOpen(false); setShowAccountMenu(false); }} className="flex items-center gap-2 px-3 py-2 rounded-lg textBase font-medium text-gray-700 dark:text-gray-200 hover:bg-blue-50 dark:hover:bg-gray-700 transition-colors duration-200"><Settings size={18} /> Settings</Link>
                       <div className="border-t border-gray-200 dark:border-gray-700 my-2"></div>
                       <button
-                        onClick={() => {
-                          if (typeof window !== 'undefined') window.location.href = '/';
-                          setIsOpen(false); setShowAccountMenu(false);
-                        }}
+                        onClick={logout}
                         className="flex items-center gap-2 w-full px-3 py-2 rounded-lg textBase font-medium text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-gray-700 transition-colors duration-200"
                       >
                         <LogOut size={18} /> Sign Out
@@ -224,7 +219,7 @@ const Navbar: React.FC = () => {
                     {currentUser ? (
                       <button
                         onClick={() => setShowAccountMenu(true)}
-                        className="flex items-center gap-2 w-full px-3 py-2 mt-2 rounded-lg text-base font-medium text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors duration-200"
+                        className="flex items-center gap-2 w-full px-3 py-2 mt-2 rounded-lg textBase font-medium text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors duration-200"
                       >
                         <User size={18} /> Account
                       </button>

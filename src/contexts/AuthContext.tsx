@@ -193,30 +193,21 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
   const logout = async () => {
     try {
-      // Sign out from Firebase first
+      // Sign out from Firebase
       await signOut(auth);
-      
       // Clear all storage
       localStorage.clear();
       sessionStorage.clear();
-      
-      // Clear application state
+      // Clear app state
       setCurrentUser(null);
       setUserData(null);
       setConfirmationResult(null);
-      
-      // Clear any reCAPTCHA instances
       if (recaptchaVerifier) {
         recaptchaVerifier.clear();
         setRecaptchaVerifier(null);
       }
-
-      // Force clear Firebase auth state
-      await auth.updateCurrentUser(null);
-      
-      // Force a page reload and redirect to home
-      window.location.href = '/';
-      
+      // Force a hard redirect to home (clears all React state)
+      window.location.assign('/');
       return true;
     } catch (error) {
       console.error('Logout error:', error);
