@@ -2,19 +2,97 @@
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
- <link rel="icon" type="image/png" href="/favicon-16x16.png" />
-
-
-
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
     <title>Mediokart - Revolutionizing Healthcare with AI and IoT</title>
     <meta name="description" content="India's first smart healthcare ecosystem starting with AuraBox - the intelligent first-aid companion. Transforming emergency healthcare response with AI and IoT technology." />
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <meta name="theme-color" content="#6d28d9" />
+    <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png" />
+    <link rel="apple-touch-icon" href="/Logo.png" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="default" />
+    <meta name="format-detection" content="telephone=yes" />
+    <meta property="og:title" content="Mediokart - Revolutionizing Healthcare with AI and IoT" />
+    <meta property="og:description" content="India's first smart healthcare ecosystem starting with AuraBox - the intelligent first-aid companion. Transforming emergency healthcare response with AI and IoT technology." />
+    <meta property="og:image" content="/Logo.png" />
+    <meta name="twitter:card" content="summary_large_image" />
+    
+    <!-- Performance optimizations -->
+    <link rel="preconnect" href="https://www.clarity.ms" crossorigin />
+    <link rel="dns-prefetch" href="https://www.clarity.ms" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="color-scheme" content="light dark" />
+    <script type="text/javascript">
+      (function(c,l,a,r,i,t,y){
+          c[a]=c[a]||function(){(c[a].q=c[a].q||[]).push(arguments)};
+          t=l.createElement(r);t.async=1;t.src="https://www.clarity.ms/tag/"+i;
+          y=l.getElementsByTagName(r)[0];y.parentNode.insertBefore(t,y);
+      })(window, document, "clarity", "script", "sdo5da016c");
+    </script>
+    <!-- Optimized font loading -->
+    <link rel="preconnect" href="https://fonts.googleapis.com" crossorigin />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link rel="preload" as="style" href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap" />
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap" media="print" onload="this.media='all'" />
+    <noscript>
+      <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap" />
+    </noscript>
   </head>
   <body>
     <div id="root"></div>
     <script type="module" src="/src/main.tsx"></script>
+    <!-- Performance optimization script -->
+    <script type="text/javascript">
+      // Performance optimizations
+      if ('loading' in HTMLImageElement.prototype) {
+        const images = document.querySelectorAll('img[loading="lazy"]');
+        images.forEach(img => {
+          img.src = img.dataset.src;
+        });
+      } else {
+        // Dynamically import the LazySizes library
+        const script = document.createElement('script');
+        script.src = 'https://cdnjs.cloudflare.com/ajax/libs/lazysizes/5.3.2/lazysizes.min.js';
+        document.body.appendChild(script);
+      }
+
+      // Register service worker for offline functionality and caching
+      if ('serviceWorker' in navigator) {
+        window.addEventListener('load', () => {
+          navigator.serviceWorker.register('/sw.js').then(registration => {
+            console.log('ServiceWorker registration successful');
+          }).catch(err => {
+            console.log('ServiceWorker registration failed', err);
+          });
+        });
+      }
+
+      // Measure and report Core Web Vitals
+      window.addEventListener('DOMContentLoaded', () => {
+        // Report LCP
+        new PerformanceObserver((entryList) => {
+          for (const entry of entryList.getEntries()) {
+            console.log('LCP:', entry.startTime, entry);
+          }
+        }).observe({entryTypes: ['largest-contentful-paint']});
+
+        // Report FID
+        new PerformanceObserver((entryList) => {
+          for (const entry of entryList.getEntries()) {
+            console.log('FID:', entry.processingStart - entry.startTime, entry);
+          }
+        }).observe({entryTypes: ['first-input']});
+
+        // Report CLS
+        new PerformanceObserver((entryList) => {
+          let clsValue = 0;
+          for (const entry of entryList.getEntries()) {
+            if (!entry.hadRecentInput) {
+              clsValue += entry.value;
+            }
+          }
+          console.log('CLS:', clsValue);
+        }).observe({entryTypes: ['layout-shift']});
+      });
+    </script>
   </body>
 </html>

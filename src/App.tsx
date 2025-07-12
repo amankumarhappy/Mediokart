@@ -5,6 +5,7 @@ import { AuthProvider } from './contexts/AuthContext';
 import Navbar from './components/Navbar';
 import Footer from './components/Footer';
 import FloatingButtons from './components/FloatingButtons';
+import ScrollToTop from './components/ScrollToTop';
 import Home from './pages/Home';
 import About from './pages/About';
 import AuraBox from './pages/AuraBox';
@@ -32,6 +33,7 @@ function App() {
       <AuthProvider>
         <Router>
           <div className="min-h-screen bg-white dark:bg-gray-900 transition-colors duration-300">
+            <ScrollToTop />
             <Navbar />
             <main>
               <Routes>
