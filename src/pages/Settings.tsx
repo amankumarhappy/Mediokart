@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { useAuth } from '../contexts/AuthContext';
 import { useNavigate } from 'react-router-dom';
+import { toast } from 'react-hot-toast';
 
 const Settings: React.FC = () => {
   const { currentUser, resetPassword, logout } = useAuth();
@@ -24,6 +25,21 @@ const Settings: React.FC = () => {
   const handleDeleteAccount = async () => {
     setShowDelete(false);
     alert('Account deletion coming soon (Firebase integration required).');
+  };
+
+  const handleLogout = async (e: React.MouseEvent) => {
+    e.preventDefault();
+    const loadingToast = toast.loading('Signing out...');
+
+    try {
+      await logout();
+      // Note: No need to navigate, AuthContext logout will handle redirect
+    } catch (error) {
+      console.error('Logout error:', error);
+      toast.error('Failed to sign out. Please try again.');
+    } finally {
+      toast.dismiss(loadingToast);
+    }
   };
 
   return (
@@ -74,7 +90,12 @@ const Settings: React.FC = () => {
       <section className="bg-white dark:bg-gray-900 rounded-lg shadow p-5">
         <h2 className="text-lg font-semibold mb-2 text-red-600">Danger Zone</h2>
         <div className="flex flex-wrap gap-2">
-          <button onClick={logout} className="px-4 py-2 bg-red-600 text-white rounded hover:bg-red-700 transition">Sign Out</button>
+          <button 
+            onClick={handleLogout} 
+            className="px-4 py-2 bg-red-600 text-white rounded hover:bg-red-700 transition"
+          >
+            Sign Out
+          </button>
           <button onClick={() => setShowDelete(true)} className="px-4 py-2 bg-red-100 text-red-700 rounded hover:bg-red-200 dark:bg-red-900/20 dark:text-red-300 transition">Delete Account</button>
         </div>
         {showDelete && (

@@ -193,27 +193,29 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
   const logout = async () => {
     try {
-      // Sign out from Firebase first to ensure auth state is cleared
+      // Sign out from Firebase first
       await signOut(auth);
       
-      // Clear application state after successful signout
-      setUserData(null);
-      setCurrentUser(null);
-      setConfirmationResult(null);
-      
-      // Clear any stored authentication data
-      localStorage.removeItem('userSettings');
-      localStorage.removeItem('auth');
+      // Clear all storage
+      localStorage.clear();
       sessionStorage.clear();
       
-      // Clear reCAPTCHA if exists
+      // Clear application state
+      setCurrentUser(null);
+      setUserData(null);
+      setConfirmationResult(null);
+      
+      // Clear any reCAPTCHA instances
       if (recaptchaVerifier) {
         recaptchaVerifier.clear();
         setRecaptchaVerifier(null);
       }
 
-      // Force reload auth state
-      auth.updateCurrentUser(null);
+      // Force clear Firebase auth state
+      await auth.updateCurrentUser(null);
+      
+      // Force a page reload and redirect to home
+      window.location.href = '/';
       
       return true;
     } catch (error) {

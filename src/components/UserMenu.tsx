@@ -14,25 +14,15 @@ const UserMenu: React.FC = () => {
     e.preventDefault();
     e.stopPropagation();
     
+    // Close menus immediately
+    setIsOpen(false);
+    setMobileMenuOpen(false);
+    
     const loadingToast = toast.loading('Signing out...');
     
     try {
-      // Close menus first
-      setIsOpen(false);
-      setMobileMenuOpen(false);
-      
-      // Attempt to logout
       await logout();
-      
-      // Clear any local storage data
-      localStorage.clear();
-      sessionStorage.clear();
-      
-      // Show success message
-      toast.success('Successfully signed out');
-      
-      // Force navigation to home page and clear navigation history
-      window.location.href = '/';
+      // AuthContext will handle the redirect and page reload
     } catch (error) {
       console.error('Logout error:', error);
       toast.error('Failed to sign out. Please try again.');
@@ -111,12 +101,10 @@ const UserMenu: React.FC = () => {
   const LogoutButton = () => (
     <button
       onClick={handleLogout}
-      className="w-full flex items-center space-x-3 px-4 py-2 text-sm text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-900/20 transition-colors focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-offset-2"
-      type="button"
-      aria-label="Sign out"
+      className="flex items-center w-full px-4 py-2 text-sm text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors"
     >
-      <LogOut className="w-4 h-4" />
-      <span>Sign Out</span>
+      <LogOut className="w-4 h-4 mr-2" />
+      Sign Out
     </button>
   );
 
