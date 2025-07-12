@@ -1,4 +1,5 @@
 import React, { createContext, useContext, useEffect, useState } from 'react';
+import '../styles/loading-animation.css';
 import { 
   User, 
   createUserWithEmailAndPassword, 
@@ -61,7 +62,7 @@ interface AuthContextType {
   loginWithPhone: (phoneNumber: string, acceptedTerms: boolean) => Promise<ConfirmationResult>;
   verifyPhoneCode: (code: string) => Promise<void>;
   loginAnonymously: (acceptedTerms: boolean) => Promise<void>;
-  logout: () => Promise<void>;
+  logout: () => Promise<boolean>;
   resetPassword: (email: string) => Promise<void>;
   setupRecaptcha: (elementId: string) => void;
 }
@@ -191,13 +192,33 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   };
 
   const logout = async () => {
-    await signOut(auth);
-    setCurrentUser(null); // Immediately update user state
-    setUserData(null);
-    setConfirmationResult(null);
-    if (recaptchaVerifier) {
-      recaptchaVerifier.clear();
-      setRecaptchaVerifier(null);
+    try {
+      // Sign out from Firebase first to ensure auth state is cleared
+      await signOut(auth);
+      
+      // Clear application state after successful signout
+      setUserData(null);
+      setCurrentUser(null);
+      setConfirmationResult(null);
+      
+      // Clear any stored authentication data
+      localStorage.removeItem('userSettings');
+      localStorage.removeItem('auth');
+      sessionStorage.clear();
+      
+      // Clear reCAPTCHA if exists
+      if (recaptchaVerifier) {
+        recaptchaVerifier.clear();
+        setRecaptchaVerifier(null);
+      }
+
+      // Force reload auth state
+      auth.updateCurrentUser(null);
+      
+      return true;
+    } catch (error) {
+      console.error('Logout error:', error);
+      throw error;
     }
   };
 
@@ -280,10 +301,15 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   return (
     <AuthContext.Provider value={value}>
       {loading ? (
-        <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-blue-50 to-indigo-100">
-          <div className="text-center">
-            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-indigo-600 mx-auto mb-4"></div>
-            <p className="text-gray-600 font-medium">Loading...</p>
+        <div className="loading-container">
+          <div className="loading-content">
+            <div className="logo-container">
+              <div className="logo-element">
+                <img src="/Logo.png" alt="Mediokart" width="40" height="40" />
+              </div>
+            </div>
+            <div className="loading-spinner" />
+            <div className="loading-text">Loading</div>
           </div>
         </div>
       ) : (

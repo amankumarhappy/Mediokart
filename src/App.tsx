@@ -2,6 +2,7 @@ import React from 'react';
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import { ThemeProvider } from './contexts/ThemeContext';
 import { AuthProvider } from './contexts/AuthContext';
+import { Toaster } from 'react-hot-toast';
 import Navbar from './components/Navbar';
 import Footer from './components/Footer';
 import FloatingButtons from './components/FloatingButtons';
@@ -33,6 +34,31 @@ function App() {
       <AuthProvider>
         <Router>
           <div className="min-h-screen bg-white dark:bg-gray-900 transition-colors duration-300">
+            <Toaster
+              position="top-right"
+              toastOptions={{
+                success: {
+                  duration: 3000,
+                  style: {
+                    background: 'rgb(34 197 94)',
+                    color: '#fff',
+                  },
+                },
+                error: {
+                  duration: 4000,
+                  style: {
+                    background: 'rgb(239 68 68)',
+                    color: '#fff',
+                  },
+                },
+                loading: {
+                  style: {
+                    background: 'rgb(59 130 246)',
+                    color: '#fff',
+                  },
+                },
+              }}
+            />
             <ScrollToTop />
             <Navbar />
             <main>

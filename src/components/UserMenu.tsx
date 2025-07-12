@@ -1,7 +1,8 @@
-import React, { useState } from 'react';
+import React, { useState, useCallback } from 'react';
 import { User, LogOut, Settings, Heart, ChevronDown, Shield, Phone, Mail, FileText, Menu as MenuIcon, X as CloseIcon } from 'lucide-react';
 import { useAuth } from '../contexts/AuthContext';
 import { useNavigate } from 'react-router-dom';
+import toast from 'react-hot-toast';
 
 const UserMenu: React.FC = () => {
   const { currentUser, userData, logout } = useAuth();
@@ -9,18 +10,36 @@ const UserMenu: React.FC = () => {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const navigate = useNavigate();
 
-  const handleLogout = async () => {
+  const handleLogout = useCallback(async (e: React.MouseEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    
+    const loadingToast = toast.loading('Signing out...');
+    
     try {
-      console.log('Logging out...');
-      await logout();
-      console.log('Logged out, redirecting...');
+      // Close menus first
       setIsOpen(false);
       setMobileMenuOpen(false);
-      window.location.replace('/'); // Hard redirect to home after logout
+      
+      // Attempt to logout
+      await logout();
+      
+      // Clear any local storage data
+      localStorage.clear();
+      sessionStorage.clear();
+      
+      // Show success message
+      toast.success('Successfully signed out');
+      
+      // Force navigation to home page and clear navigation history
+      window.location.href = '/';
     } catch (error) {
       console.error('Logout error:', error);
+      toast.error('Failed to sign out. Please try again.');
+    } finally {
+      toast.dismiss(loadingToast);
     }
-  };
+  }, [logout]);
 
   if (!currentUser) return null;
 
@@ -88,6 +107,19 @@ const UserMenu: React.FC = () => {
     </>
   );
 
+  // Logout button component for reuse
+  const LogoutButton = () => (
+    <button
+      onClick={handleLogout}
+      className="w-full flex items-center space-x-3 px-4 py-2 text-sm text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-900/20 transition-colors focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-offset-2"
+      type="button"
+      aria-label="Sign out"
+    >
+      <LogOut className="w-4 h-4" />
+      <span>Sign Out</span>
+    </button>
+  );
+
   return (
     <div className="relative">
       {/* Desktop UserMenu Button */}
@@ -115,7 +147,8 @@ const UserMenu: React.FC = () => {
         </span>
         <ChevronDown className="w-4 h-4 text-gray-500" />
       </button>
-      {/* Mobile Hamburger Icon */}
+
+      {/* Mobile Menu Button */}
       <button
         type="button"
         className="md:hidden flex items-center justify-center w-10 h-10 bg-gray-100 dark:bg-gray-800 rounded-lg"
@@ -124,6 +157,7 @@ const UserMenu: React.FC = () => {
       >
         <MenuIcon className="w-6 h-6 text-gray-700 dark:text-gray-300" />
       </button>
+
       {/* Desktop Dropdown */}
       {isOpen && (
         <>
@@ -165,23 +199,16 @@ const UserMenu: React.FC = () => {
               {menuOptions}
             </div>
             <div className="border-t border-gray-200 dark:border-gray-700 py-2">
-              <button
-                onClick={handleLogout}
-                className="w-full flex items-center space-x-3 px-4 py-2 text-sm text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-900/20 transition-colors"
-              >
-                <LogOut className="w-4 h-4" />
-                <span>Sign Out</span>
-              </button>
+              <LogoutButton />
             </div>
           </div>
         </>
       )}
-      {/* Mobile Slide-out Drawer */}
+
+      {/* Mobile Slide-out Menu */}
       {mobileMenuOpen && (
         <div className="fixed inset-0 z-30 flex">
-          {/* Overlay */}
-          <div className="fixed inset-0 bg-black bg-opacity-40" onClick={() => setMobileMenuOpen(false)} aria-label="Close menu overlay" />
-          {/* Drawer */}
+          <div className="fixed inset-0 bg-black bg-opacity-40" onClick={() => setMobileMenuOpen(false)} />
           <div className="relative ml-auto w-72 max-w-full h-full bg-white dark:bg-gray-900 shadow-xl flex flex-col">
             <div className="flex items-center justify-between p-4 border-b border-gray-200 dark:border-gray-700">
               <div className="flex items-center space-x-3">
@@ -209,13 +236,7 @@ const UserMenu: React.FC = () => {
               {menuOptions}
             </div>
             <div className="border-t border-gray-200 dark:border-gray-700 py-2">
-              <button
-                onClick={handleLogout}
-                className="w-full flex items-center space-x-3 px-4 py-2 text-sm text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-900/20 transition-colors"
-              >
-                <LogOut className="w-4 h-4" />
-                <span>Sign Out</span>
-              </button>
+              <LogoutButton />
             </div>
           </div>
         </div>
