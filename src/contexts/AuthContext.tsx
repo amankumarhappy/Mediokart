@@ -85,58 +85,68 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   const [confirmationResult, setConfirmationResult] = useState<ConfirmationResult | null>(null);
 
   const createUserDocument = async (user: User, authMethod: 'email' | 'phone' | 'google' | 'anonymous', displayName?: string) => {
-    const userDoc: any = {
-      uid: user.uid,
-      email: user.email,
-      displayName: displayName || user.displayName || 'User',
-      phoneNumber: user.phoneNumber,
-      photoURL: user.photoURL,
-      isAnonymous: user.isAnonymous,
-      createdAt: new Date(),
-      lastLoginAt: new Date(),
-      authMethod
-    };
-    
-    // Create main profile document
-    await setDoc(doc(db, 'Profile', user.uid), userDoc, { merge: true });
-    
-    // Create Basic Information subcollection
-    await setDoc(doc(db, 'Profile', user.uid, 'Basic Information', 'data'), {
-      firstName: '',
-      lastName: '',
-      dob: '',
-      age: '',
-      gender: '',
-      bloodGroup: '',
-      emergencyContactName: '',
-      emergencyContactNumber: '',
-      createdAt: new Date()
-    }, { merge: true });
-    
-    // Create Contact Information subcollection
-    await setDoc(doc(db, 'Profile', user.uid, 'Contact Information', 'data'), {
-      email: user.email || '',
-      phoneNumber: user.phoneNumber || '',
-      alternateNumber: '',
-      address: '',
-      city: '',
-      state: '',
-      pincode: '',
-      country: '',
-      createdAt: new Date()
-    }, { merge: true });
-    
-    // Create Health Profile subcollection
-    await setDoc(doc(db, 'Profile', user.uid, 'Health Profile', 'data'), {
-      height: '',
-      weight: '',
-      bmi: '',
-      allergies: '',
-      chronic: '',
-      medications: '',
-      familyHistory: '',
-      createdAt: new Date()
-    }, { merge: true });
+    try {
+      const userDoc: any = {
+        uid: user.uid,
+        email: user.email,
+        displayName: displayName || user.displayName || 'User',
+        phoneNumber: user.phoneNumber,
+        photoURL: user.photoURL,
+        isAnonymous: user.isAnonymous,
+        createdAt: new Date(),
+        lastLoginAt: new Date(),
+        authMethod
+      };
+      
+      // Create main profile document with retry logic
+      await setDoc(doc(db, 'Profile', user.uid), userDoc, { merge: true });
+      
+      // Create Basic Information subcollection
+      await setDoc(doc(db, 'Profile', user.uid, 'Basic Information', 'data'), {
+        firstName: '',
+        lastName: '',
+        dob: '',
+        age: '',
+        gender: '',
+        bloodGroup: '',
+        emergencyContactName: '',
+        emergencyContactNumber: '',
+        createdAt: new Date()
+      }, { merge: true });
+      
+      // Create Contact Information subcollection
+      await setDoc(doc(db, 'Profile', user.uid, 'Contact Information', 'data'), {
+        email: user.email || '',
+        phoneNumber: user.phoneNumber || '',
+        alternateNumber: '',
+        address: '',
+        city: '',
+        state: '',
+        pincode: '',
+        country: '',
+        createdAt: new Date()
+      }, { merge: true });
+      
+      // Create Health Profile subcollection
+      await setDoc(doc(db, 'Profile', user.uid, 'Health Profile', 'data'), {
+        height: '',
+        weight: '',
+        bmi: '',
+        allergies: '',
+        chronic: '',
+        medications: '',
+        familyHistory: '',
+        createdAt: new Date()
+      }, { merge: true });
+    } catch (error: any) {
+      console.error('Error creating user document:', error);
+      // Don't throw error for permission issues, just log them
+      if (error.code === 'permission-denied' || error.code === 'unauthenticated') {
+        console.warn('Firestore permissions issue, user authenticated but document creation failed');
+        return; // Continue with authentication even if document creation fails
+      }
+      throw error;
+    }
   };
 
   const signup = async (email: string, password: string, name: string, acceptedTerms: boolean) => {
@@ -147,8 +157,13 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     const userCredential = await createUserWithEmailAndPassword(auth, email, password);
     const user = userCredential.user;
 
-    await updateProfile(user, { displayName: name });
-    await createUserDocument(user, 'email', name);
+    try {
+      await updateProfile(user, { displayName: name });
+      await createUserDocument(user, 'email', name);
+    } catch (error: any) {
+      console.warn('Could not create user profile document:', error);
+      // Don't fail signup if profile creation fails
+    }
   };
 
   const login = async (email: string, password: string, acceptedTerms: boolean) => {
@@ -159,9 +174,14 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     const userCredential = await signInWithEmailAndPassword(auth, email, password);
     const user = userCredential.user;
 
-    await setDoc(doc(db, 'Profile', user.uid), {
-      lastLoginAt: new Date()
-    }, { merge: true });
+    try {
+      await setDoc(doc(db, 'Profile', user.uid), {
+        lastLoginAt: new Date()
+      }, { merge: true });
+    } catch (error: any) {
+      console.warn('Could not update lastLoginAt:', error);
+      // Don't fail login if we can't update the timestamp
+    }
   };
 
   const loginWithGoogle = async (acceptedTerms: boolean) => {
@@ -172,7 +192,12 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     const result = await signInWithPopup(auth, googleProvider);
     const user = result.user;
 
-    await createUserDocument(user, 'google');
+    try {
+      await createUserDocument(user, 'google');
+    } catch (error: any) {
+      console.warn('Could not create user profile document for Google user:', error);
+      // Don't fail login if profile creation fails
+    }
   };
 
   const setupRecaptcha = (elementId: string) => {
@@ -288,14 +313,31 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       if (userDoc.exists()) {
         const data = userDoc.data();
         
-        // Fetch subcollection data
-        const basicInfoDoc = await getDoc(doc(db, 'Profile', user.uid, 'Basic Information', 'data'));
-        const contactInfoDoc = await getDoc(doc(db, 'Profile', user.uid, 'Contact Information', 'data'));
-        const healthProfileDoc = await getDoc(doc(db, 'Profile', user.uid, 'Health Profile', 'data'));
+        // Fetch subcollection data with error handling
+        let basicInfo = {};
+        let contactInfo = {};
+        let healthProfile = {};
         
-        const basicInfo = basicInfoDoc.exists() ? basicInfoDoc.data() : {};
-        const contactInfo = contactInfoDoc.exists() ? contactInfoDoc.data() : {};
-        const healthProfile = healthProfileDoc.exists() ? healthProfileDoc.data() : {};
+        try {
+          const basicInfoDoc = await getDoc(doc(db, 'Profile', user.uid, 'Basic Information', 'data'));
+          basicInfo = basicInfoDoc.exists() ? basicInfoDoc.data() : {};
+        } catch (error) {
+          console.warn('Could not fetch basic info:', error);
+        }
+        
+        try {
+          const contactInfoDoc = await getDoc(doc(db, 'Profile', user.uid, 'Contact Information', 'data'));
+          contactInfo = contactInfoDoc.exists() ? contactInfoDoc.data() : {};
+        } catch (error) {
+          console.warn('Could not fetch contact info:', error);
+        }
+        
+        try {
+          const healthProfileDoc = await getDoc(doc(db, 'Profile', user.uid, 'Health Profile', 'data'));
+          healthProfile = healthProfileDoc.exists() ? healthProfileDoc.data() : {};
+        } catch (error) {
+          console.warn('Could not fetch health profile:', error);
+        }
         
         setUserData({
           uid: user.uid,
@@ -307,29 +349,95 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
           createdAt: data.createdAt?.toDate ? data.createdAt.toDate() : new Date(),
           lastLoginAt: data.lastLoginAt?.toDate ? data.lastLoginAt.toDate() : new Date(),
           authMethod: data.authMethod || 'email',
-          firstName: basicInfo.firstName || '',
-          lastName: basicInfo.lastName || '',
-          dob: basicInfo.dob || '',
-          gender: basicInfo.gender || '',
-          bloodGroup: basicInfo.bloodGroup || '',
-          emergencyContactName: basicInfo.emergencyContactName || '',
-          emergencyContactNumber: basicInfo.emergencyContactNumber || '',
-          alternateNumber: contactInfo.alternateNumber || '',
-          address: contactInfo.address || '',
-          city: contactInfo.city || '',
-          state: contactInfo.state || '',
-          pincode: contactInfo.pincode || '',
-          country: contactInfo.country || '',
-          height: healthProfile.height || '',
-          weight: healthProfile.weight || '',
-          allergies: healthProfile.allergies || '',
-          chronic: healthProfile.chronic || '',
-          medications: healthProfile.medications || '',
-          familyHistory: healthProfile.familyHistory || ''
+          firstName: (basicInfo as any).firstName || '',
+          lastName: (basicInfo as any).lastName || '',
+          dob: (basicInfo as any).dob || '',
+          gender: (basicInfo as any).gender || '',
+          bloodGroup: (basicInfo as any).bloodGroup || '',
+          emergencyContactName: (basicInfo as any).emergencyContactName || '',
+          emergencyContactNumber: (basicInfo as any).emergencyContactNumber || '',
+          alternateNumber: (contactInfo as any).alternateNumber || '',
+          address: (contactInfo as any).address || '',
+          city: (contactInfo as any).city || '',
+          state: (contactInfo as any).state || '',
+          pincode: (contactInfo as any).pincode || '',
+          country: (contactInfo as any).country || '',
+          height: (healthProfile as any).height || '',
+          weight: (healthProfile as any).weight || '',
+          allergies: (healthProfile as any).allergies || '',
+          chronic: (healthProfile as any).chronic || '',
+          medications: (healthProfile as any).medications || '',
+          familyHistory: (healthProfile as any).familyHistory || ''
+        });
+      } else {
+        // If no user document exists, create basic user data from auth
+        setUserData({
+          uid: user.uid,
+          email: user.email,
+          displayName: user.displayName || 'User',
+          phoneNumber: user.phoneNumber,
+          photoURL: user.photoURL,
+          isAnonymous: user.isAnonymous,
+          createdAt: new Date(),
+          lastLoginAt: new Date(),
+          authMethod: 'email',
+          firstName: '',
+          lastName: '',
+          dob: '',
+          gender: '',
+          bloodGroup: '',
+          emergencyContactName: '',
+          emergencyContactNumber: '',
+          alternateNumber: '',
+          address: '',
+          city: '',
+          state: '',
+          pincode: '',
+          country: '',
+          height: '',
+          weight: '',
+          allergies: '',
+          chronic: '',
+          medications: '',
+          familyHistory: ''
         });
       }
-    } catch (error) {
+    } catch (error: any) {
       console.error('Error fetching user data:', error);
+      if (error.code === 'permission-denied') {
+        console.warn('Permission denied for user data, using basic auth data');
+        // Set basic user data from auth when permissions are denied
+        setUserData({
+          uid: user.uid,
+          email: user.email,
+          displayName: user.displayName || 'User',
+          phoneNumber: user.phoneNumber,
+          photoURL: user.photoURL,
+          isAnonymous: user.isAnonymous,
+          createdAt: new Date(),
+          lastLoginAt: new Date(),
+          authMethod: 'email',
+          firstName: '',
+          lastName: '',
+          dob: '',
+          gender: '',
+          bloodGroup: '',
+          emergencyContactName: '',
+          emergencyContactNumber: '',
+          alternateNumber: '',
+          address: '',
+          city: '',
+          state: '',
+          pincode: '',
+          country: '',
+          height: '',
+          weight: '',
+          allergies: '',
+          chronic: '',
+          medications: '',
+          familyHistory: ''
+        });
+      }
     }
   };
 

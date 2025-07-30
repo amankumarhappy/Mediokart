@@ -20,23 +20,24 @@ const firebaseConfig = {
 const app = initializeApp(firebaseConfig);
 
 // Enable App Check debug mode in development
-let appCheckProvider;
-if (typeof window !== 'undefined' && (window.location.hostname === 'localhost' || window.location.hostname.includes('webcontainer'))) {
-  self.FIREBASE_APPCHECK_DEBUG_TOKEN = true;
-  appCheckProvider = new ReCaptchaV3Provider('6LcOxHQrAAAAALtzRFYObDuXifYplItL7xPl1rZW');
-} else {
-  appCheckProvider = new ReCaptchaV3Provider('6LcOxHQrAAAAALtzRFYObDuXifYplItL7xPl1rZW');
-}
-
-// Always initialize App Check
 if (typeof window !== 'undefined') {
   try {
+    // Set debug token for development environments
+    if (window.location.hostname === 'localhost' || 
+        window.location.hostname.includes('webcontainer') || 
+        window.location.hostname.includes('replit')) {
+      (window as any).FIREBASE_APPCHECK_DEBUG_TOKEN = true;
+    }
+
+    const appCheckProvider = new ReCaptchaV3Provider('6LcOxHQrAAAAALtzRFYObDuXifYplItL7xPl1rZW');
+    
     initializeAppCheck(app, {
       provider: appCheckProvider,
       isTokenAutoRefreshEnabled: true
     });
   } catch (error) {
-    console.warn('App Check initialization failed:', error);
+    console.warn('App Check initialization failed, continuing without it:', error);
+    // Continue without App Check in development
   }
 }
 
