@@ -3,7 +3,7 @@ import { Mail, Phone, MapPin, Clock, Send, MessageSquare, Users, Building, Check
 import { useInView } from 'react-intersection-observer';
 import { db } from '../config/firebase';
 import { collection, addDoc } from 'firebase/firestore';
-import { useAuth } from '../context/AuthContext'; // Import useAuth
+import { useAuth } from "../contexts/AuthContext"; // Import useAuth
 
 const Contact: React.FC = () => {
   const { currentUser } = useAuth();
