@@ -25,7 +25,8 @@ if (typeof window !== 'undefined') {
     // Set debug token for development environments
     if (window.location.hostname === 'localhost' || 
         window.location.hostname.includes('webcontainer') || 
-        window.location.hostname.includes('replit')) {
+        window.location.hostname.includes('replit') ||
+        window.location.hostname.includes('repl.co')) {
       (window as any).FIREBASE_APPCHECK_DEBUG_TOKEN = true;
     }
 
@@ -40,6 +41,23 @@ if (typeof window !== 'undefined') {
     // Continue without App Check in development
   }
 }
+
+// Add error handling for Firestore operations
+export const handleFirestoreError = (error: any, operation: string) => {
+  console.error(`Firestore ${operation} error:`, error);
+  
+  if (error.code === 'permission-denied') {
+    console.warn(`Permission denied for ${operation}. This might be due to Firestore security rules.`);
+    return false;
+  }
+  
+  if (error.code === 'unavailable') {
+    console.warn(`Firestore temporarily unavailable for ${operation}. Please try again.`);
+    return false;
+  }
+  
+  return false;
+};
 
 // Export Firebase services
 export const auth = getAuth(app);

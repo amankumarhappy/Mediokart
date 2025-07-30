@@ -18,29 +18,35 @@ const Newsletter: React.FC<NewsletterProps> = ({ variant = 'inline', className =
     setStatus('loading');
 
     try {
-      // Check if email already exists
-      const existingEmailQuery = query(
-        collection(db, 'Newsletter'),
-        where('email', '==', email)
-      );
-      const existingEmails = await getDocs(existingEmailQuery);
+      // Try to save to Firestore with error handling
+      try {
+        // Check if email already exists
+        const existingEmailQuery = query(
+          collection(db, 'Newsletter'),
+          where('email', '==', email)
+        );
+        const existingEmails = await getDocs(existingEmailQuery);
 
-      if (!existingEmails.empty) {
-        setMessage('You\'re already subscribed to our newsletter!');
-        setEmail('');
-        setStatus('idle');
-        return;
+        if (!existingEmails.empty) {
+          setMessage('You\'re already subscribed to our newsletter!');
+          setEmail('');
+          setStatus('idle');
+          return;
+        }
+
+        // Save to Firestore
+        await addDoc(collection(db, 'Newsletter'), {
+          email,
+          source: 'newsletter',
+          subscribedAt: new Date(),
+          status: 'active'
+        });
+      } catch (firestoreError: any) {
+        console.warn('Firestore save failed, continuing with email subscription:', firestoreError);
+        // Continue even if Firestore fails
       }
 
-      // Save to Firestore
-      await addDoc(collection(db, 'Newsletter'), {
-        email,
-        source: 'newsletter',
-        subscribedAt: new Date(),
-        status: 'active'
-      });
-
-      // Also send via email
+      // Send via email as backup
       const response = await fetch('https://formspree.io/f/xannelqp', {
         method: 'POST',
         headers: {
@@ -61,10 +67,11 @@ const Newsletter: React.FC<NewsletterProps> = ({ variant = 'inline', className =
         throw new Error('Subscription failed');
       }
     } catch (error) {
+      console.error('Newsletter subscription error:', error);
       setStatus('error');
       setMessage('Something went wrong. Please try again.');
     } finally {
-      setStatus('idle');
+      setTimeout(() => setStatus('idle'), 3000);
     }
   };
 

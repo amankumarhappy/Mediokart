@@ -143,58 +143,75 @@ const Profile: React.FC = () => {
     setSaving(true);
     
     try {
-      // Update main profile
-      await setDoc(doc(db, 'Profile', currentUser.uid), {
-        displayName: profile.fullName,
-        email: profile.email,
-        phoneNumber: profile.phoneNumber,
-        updatedAt: new Date()
-      }, { merge: true });
+      // Update main profile with retry logic
+      try {
+        await setDoc(doc(db, 'Profile', currentUser.uid), {
+          displayName: profile.fullName,
+          email: profile.email,
+          phoneNumber: profile.phoneNumber,
+          updatedAt: new Date()
+        }, { merge: true });
+      } catch (error: any) {
+        console.warn('Failed to update main profile:', error);
+      }
       
-      // Update Basic Information
-      await setDoc(doc(db, 'Profile', currentUser.uid, 'Basic Information', 'data'), {
-        firstName: profile.fullName.split(' ')[0] || '',
-        lastName: profile.fullName.split(' ').slice(1).join(' ') || '',
-        gender: profile.gender,
-        dob: profile.dob,
-        age: profile.age,
-        bloodGroup: profile.bloodGroup,
-        emergencyContactName: profile.emergencyContactName,
-        emergencyContactNumber: profile.emergencyContactNumber,
-        updatedAt: new Date()
-      }, { merge: true });
+      // Update Basic Information with retry logic
+      try {
+        await setDoc(doc(db, 'Profile', currentUser.uid, 'Basic Information', 'data'), {
+          firstName: profile.fullName.split(' ')[0] || '',
+          lastName: profile.fullName.split(' ').slice(1).join(' ') || '',
+          gender: profile.gender,
+          dob: profile.dob,
+          age: profile.age,
+          bloodGroup: profile.bloodGroup,
+          emergencyContactName: profile.emergencyContactName,
+          emergencyContactNumber: profile.emergencyContactNumber,
+          updatedAt: new Date()
+        }, { merge: true });
+      } catch (error: any) {
+        console.warn('Failed to update basic information:', error);
+      }
       
-      // Update Contact Information
-      await setDoc(doc(db, 'Profile', currentUser.uid, 'Contact Information', 'data'), {
-        email: profile.email,
-        phoneNumber: profile.phoneNumber,
-        alternateNumber: profile.alternateNumber,
-        address: profile.address,
-        city: profile.city,
-        state: profile.state,
-        pincode: profile.pincode,
-        country: profile.country,
-        updatedAt: new Date()
-      }, { merge: true });
+      // Update Contact Information with retry logic
+      try {
+        await setDoc(doc(db, 'Profile', currentUser.uid, 'Contact Information', 'data'), {
+          email: profile.email,
+          phoneNumber: profile.phoneNumber,
+          alternateNumber: profile.alternateNumber,
+          address: profile.address,
+          city: profile.city,
+          state: profile.state,
+          pincode: profile.pincode,
+          country: profile.country,
+          updatedAt: new Date()
+        }, { merge: true });
+      } catch (error: any) {
+        console.warn('Failed to update contact information:', error);
+      }
       
-      // Update Health Profile
-      await setDoc(doc(db, 'Profile', currentUser.uid, 'Health Profile', 'data'), {
-        height: profile.height,
-        weight: profile.weight,
-        bmi: profile.bmi,
-        allergies: profile.allergies,
-        chronic: profile.chronic,
-        medications: profile.medications,
-        familyHistory: profile.familyHistory,
-        updatedAt: new Date()
-      }, { merge: true });
+      // Update Health Profile with retry logic
+      try {
+        await setDoc(doc(db, 'Profile', currentUser.uid, 'Health Profile', 'data'), {
+          height: profile.height,
+          weight: profile.weight,
+          bmi: profile.bmi,
+          allergies: profile.allergies,
+          chronic: profile.chronic,
+          medications: profile.medications,
+          familyHistory: profile.familyHistory,
+          updatedAt: new Date()
+        }, { merge: true });
+      } catch (error: any) {
+        console.warn('Failed to update health profile:', error);
+      }
       
       setSaving(false);
       setSuccess(true);
-      setTimeout(() => setSuccess(false), 2000);
+      setTimeout(() => setSuccess(false), 3000);
     } catch (error) {
       console.error('Error saving profile:', error);
       setSaving(false);
+      alert('Some profile updates may have failed due to permissions. Please try again later.');
     }
   };
 

@@ -47,8 +47,7 @@ const Investor: React.FC = () => {
 
     try {
       // Save to Firestore
-      await addDoc(collection(db, 'Careers'), {
-        type: 'investor',
+      await addDoc(collection(db, 'Investor'), {
         name: formData.name,
         email: formData.email,
         company: formData.company,
