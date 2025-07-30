@@ -1,6 +1,8 @@
 import React, { useState } from 'react';
 import { ArrowLeft, CheckCircle, AlertCircle, Users, Star, Clock, Shield } from 'lucide-react';
 import { Link } from 'react-router-dom';
+import { db } from '../config/firebase';
+import { collection, addDoc } from 'firebase/firestore';
 
 const BetaProgram: React.FC = () => {
   const [formData, setFormData] = useState({
@@ -80,6 +82,21 @@ const BetaProgram: React.FC = () => {
     setFormStatus('loading');
 
     try {
+      // Save to Firestore
+      await addDoc(collection(db, 'beta-program'), {
+        name: formData.name,
+        email: formData.email,
+        phone: formData.phone,
+        profession: formData.profession,
+        location: formData.location,
+        healthcareExperience: formData.healthcareExperience,
+        interests: formData.interests,
+        feedback: formData.feedback,
+        registeredAt: new Date(),
+        status: 'registered'
+      });
+
+      // Also send via email
       const response = await fetch('https://formspree.io/f/mrbkngrj', {
         method: 'POST',
         headers: {
@@ -92,22 +109,18 @@ const BetaProgram: React.FC = () => {
         }),
       });
 
-      if (response.ok) {
-        setFormStatus('success');
-        setStatusMessage('Thank you for joining our beta program! We\'ll contact you soon with exclusive updates and early access information.');
-        setFormData({
-          name: '',
-          email: '',
-          phone: '',
-          profession: '',
-          location: '',
-          healthcareExperience: '',
-          interests: [],
-          feedback: ''
-        });
-      } else {
-        throw new Error('Form submission failed');
-      }
+      setFormStatus('success');
+      setStatusMessage('Thank you for joining our beta program! We\'ll contact you soon with exclusive updates and early access information.');
+      setFormData({
+        name: '',
+        email: '',
+        phone: '',
+        profession: '',
+        location: '',
+        healthcareExperience: '',
+        interests: [],
+        feedback: ''
+      });
     } catch (error) {
       setFormStatus('error');
       setStatusMessage('Something went wrong. Please try again or contact us directly.');

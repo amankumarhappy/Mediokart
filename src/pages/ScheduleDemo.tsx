@@ -1,6 +1,8 @@
 import React, { useState } from 'react';
 import { ArrowLeft, CheckCircle, AlertCircle, Calendar, Clock, Video, MapPin } from 'lucide-react';
 import { Link } from 'react-router-dom';
+import { db } from '../config/firebase';
+import { collection, addDoc } from 'firebase/firestore';
 
 const ScheduleDemo: React.FC = () => {
   const [formData, setFormData] = useState({
@@ -49,6 +51,23 @@ const ScheduleDemo: React.FC = () => {
     setFormStatus('loading');
 
     try {
+      // Save to Firestore
+      await addDoc(collection(db, 'schedule-demo'), {
+        name: formData.name,
+        email: formData.email,
+        phone: formData.phone,
+        company: formData.company,
+        preferredDate: formData.preferredDate,
+        preferredTime: formData.preferredTime,
+        platform: formData.platform,
+        location: formData.location,
+        interests: formData.interests,
+        questions: formData.questions,
+        scheduledAt: new Date(),
+        status: 'pending'
+      });
+
+      // Also send via email
       const response = await fetch('https://formspree.io/f/mvgreodv', {
         method: 'POST',
         headers: {
@@ -60,24 +79,20 @@ const ScheduleDemo: React.FC = () => {
         }),
       });
 
-      if (response.ok) {
-        setFormStatus('success');
-        setStatusMessage('Thank you for scheduling a demo! Our team will contact you within 24 hours to confirm the meeting details.');
-        setFormData({
-          name: '',
-          email: '',
-          phone: '',
-          company: '',
-          preferredDate: '',
-          preferredTime: '',
-          platform: '',
-          location: '',
-          interests: '',
-          questions: ''
-        });
-      } else {
-        throw new Error('Form submission failed');
-      }
+      setFormStatus('success');
+      setStatusMessage('Thank you for scheduling a demo! Our team will contact you within 24 hours to confirm the meeting details.');
+      setFormData({
+        name: '',
+        email: '',
+        phone: '',
+        company: '',
+        preferredDate: '',
+        preferredTime: '',
+        platform: '',
+        location: '',
+        interests: '',
+        questions: ''
+      });
     } catch (error) {
       setFormStatus('error');
       setStatusMessage('Something went wrong. Please try again or contact us directly.');

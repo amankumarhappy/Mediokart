@@ -96,11 +96,47 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       lastLoginAt: new Date(),
       authMethod
     };
-    // Only add extra fields if they are defined
-    if (user.displayName) userDoc.firstName = '';
-    if (user.displayName) userDoc.lastName = '';
-    if (user.displayName) userDoc.dob = '';
-    await setDoc(doc(db, 'users', user.uid), userDoc, { merge: true });
+    
+    // Create main profile document
+    await setDoc(doc(db, 'Profile', user.uid), userDoc, { merge: true });
+    
+    // Create Basic Information subcollection
+    await setDoc(doc(db, 'Profile', user.uid, 'Basic Information', 'data'), {
+      firstName: '',
+      lastName: '',
+      dob: '',
+      age: '',
+      gender: '',
+      bloodGroup: '',
+      emergencyContactName: '',
+      emergencyContactNumber: '',
+      createdAt: new Date()
+    }, { merge: true });
+    
+    // Create Contact Information subcollection
+    await setDoc(doc(db, 'Profile', user.uid, 'Contact Information', 'data'), {
+      email: user.email || '',
+      phoneNumber: user.phoneNumber || '',
+      alternateNumber: '',
+      address: '',
+      city: '',
+      state: '',
+      pincode: '',
+      country: '',
+      createdAt: new Date()
+    }, { merge: true });
+    
+    // Create Health Profile subcollection
+    await setDoc(doc(db, 'Profile', user.uid, 'Health Profile', 'data'), {
+      height: '',
+      weight: '',
+      bmi: '',
+      allergies: '',
+      chronic: '',
+      medications: '',
+      familyHistory: '',
+      createdAt: new Date()
+    }, { merge: true });
   };
 
   const signup = async (email: string, password: string, name: string, acceptedTerms: boolean) => {
@@ -123,7 +159,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     const userCredential = await signInWithEmailAndPassword(auth, email, password);
     const user = userCredential.user;
 
-    await setDoc(doc(db, 'users', user.uid), {
+    await setDoc(doc(db, 'Profile', user.uid), {
       lastLoginAt: new Date()
     }, { merge: true });
   };
@@ -248,9 +284,19 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
   const fetchUserData = async (user: User) => {
     try {
-      const userDoc = await getDoc(doc(db, 'users', user.uid));
+      const userDoc = await getDoc(doc(db, 'Profile', user.uid));
       if (userDoc.exists()) {
         const data = userDoc.data();
+        
+        // Fetch subcollection data
+        const basicInfoDoc = await getDoc(doc(db, 'Profile', user.uid, 'Basic Information', 'data'));
+        const contactInfoDoc = await getDoc(doc(db, 'Profile', user.uid, 'Contact Information', 'data'));
+        const healthProfileDoc = await getDoc(doc(db, 'Profile', user.uid, 'Health Profile', 'data'));
+        
+        const basicInfo = basicInfoDoc.exists() ? basicInfoDoc.data() : {};
+        const contactInfo = contactInfoDoc.exists() ? contactInfoDoc.data() : {};
+        const healthProfile = healthProfileDoc.exists() ? healthProfileDoc.data() : {};
+        
         setUserData({
           uid: user.uid,
           email: user.email,
@@ -261,25 +307,25 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
           createdAt: data.createdAt?.toDate ? data.createdAt.toDate() : new Date(),
           lastLoginAt: data.lastLoginAt?.toDate ? data.lastLoginAt.toDate() : new Date(),
           authMethod: data.authMethod || 'email',
-          firstName: data.firstName || '',
-          lastName: data.lastName || '',
-          dob: data.dob || '',
-          gender: data.gender || '',
-          bloodGroup: data.bloodGroup || '',
-          emergencyContactName: data.emergencyContactName || '',
-          emergencyContactNumber: data.emergencyContactNumber || '',
-          alternateNumber: data.alternateNumber || '',
-          address: data.address || '',
-          city: data.city || '',
-          state: data.state || '',
-          pincode: data.pincode || '',
-          country: data.country || '',
-          height: data.height || '',
-          weight: data.weight || '',
-          allergies: data.allergies || '',
-          chronic: data.chronic || '',
-          medications: data.medications || '',
-          familyHistory: data.familyHistory || ''
+          firstName: basicInfo.firstName || '',
+          lastName: basicInfo.lastName || '',
+          dob: basicInfo.dob || '',
+          gender: basicInfo.gender || '',
+          bloodGroup: basicInfo.bloodGroup || '',
+          emergencyContactName: basicInfo.emergencyContactName || '',
+          emergencyContactNumber: basicInfo.emergencyContactNumber || '',
+          alternateNumber: contactInfo.alternateNumber || '',
+          address: contactInfo.address || '',
+          city: contactInfo.city || '',
+          state: contactInfo.state || '',
+          pincode: contactInfo.pincode || '',
+          country: contactInfo.country || '',
+          height: healthProfile.height || '',
+          weight: healthProfile.weight || '',
+          allergies: healthProfile.allergies || '',
+          chronic: healthProfile.chronic || '',
+          medications: healthProfile.medications || '',
+          familyHistory: healthProfile.familyHistory || ''
         });
       }
     } catch (error) {

@@ -1,6 +1,8 @@
 import React, { useState } from 'react';
 import { Mail, Phone, MapPin, Clock, Send, MessageSquare, Users, Building, CheckCircle, AlertCircle } from 'lucide-react';
 import { useInView } from 'react-intersection-observer';
+import { db } from '../config/firebase';
+import { collection, addDoc } from 'firebase/firestore';
 
 const Contact: React.FC = () => {
   const [heroRef, heroInView] = useInView({ triggerOnce: true, threshold: 0.1 });
@@ -70,6 +72,19 @@ const Contact: React.FC = () => {
     setFormStatus('loading');
 
     try {
+      // Save to Firestore
+      await addDoc(collection(db, 'Contact'), {
+        name: formData.name,
+        email: formData.email,
+        company: formData.company,
+        inquiryType: formData.inquiryType,
+        subject: formData.subject,
+        message: formData.message,
+        submittedAt: new Date(),
+        status: 'new'
+      });
+
+      // Also send via email
       const response = await fetch('https://formspree.io/f/mzzbjoag', {
         method: 'POST',
         headers: {
@@ -86,20 +101,16 @@ const Contact: React.FC = () => {
         }),
       });
 
-      if (response.ok) {
-        setFormStatus('success');
-        setStatusMessage('Thank you for your message! We\'ll get back to you within 24 hours.');
-        setFormData({
-          name: '',
-          email: '',
-          company: '',
-          inquiryType: 'general',
-          subject: '',
-          message: ''
-        });
-      } else {
-        throw new Error('Form submission failed');
-      }
+      setFormStatus('success');
+      setStatusMessage('Thank you for your message! We\'ll get back to you within 24 hours.');
+      setFormData({
+        name: '',
+        email: '',
+        company: '',
+        inquiryType: 'general',
+        subject: '',
+        message: ''
+      });
     } catch (error) {
       setFormStatus('error');
       setStatusMessage('Something went wrong. Please try again or contact us directly.');

@@ -1,11 +1,71 @@
-import React from 'react';
-import { Users, Lightbulb, TrendingUp, Heart, Code, Pen, Video, Palette, Brain, DollarSign, Stethoscope, Megaphone, ArrowRight } from 'lucide-react';
+import React, { useState } from 'react';
+import { Users, Lightbulb, TrendingUp, Heart, Code, Pen, Video, Palette, Brain, DollarSign, Stethoscope, Megaphone, ArrowRight, X } from 'lucide-react';
 import { useInView } from 'react-intersection-observer';
+import { db } from '../config/firebase';
+import { collection, addDoc } from 'firebase/firestore';
 
 const Careers: React.FC = () => {
   const [heroRef, heroInView] = useInView({ triggerOnce: true, threshold: 0.1 });
   const [cultureRef, cultureInView] = useInView({ triggerOnce: true, threshold: 0.1 });
   const [rolesRef, rolesInView] = useInView({ triggerOnce: true, threshold: 0.1 });
+  
+  const [showApplicationModal, setShowApplicationModal] = useState(false);
+  const [selectedRole, setSelectedRole] = useState<any>(null);
+  const [applicationData, setApplicationData] = useState({
+    name: '',
+    email: '',
+    phone: '',
+    experience: '',
+    portfolio: '',
+    coverLetter: ''
+  });
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [submitMessage, setSubmitMessage] = useState('');
+
+  const handleApplicationSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setIsSubmitting(true);
+
+    try {
+      await addDoc(collection(db, 'Careers'), {
+        type: 'job_application',
+        role: selectedRole?.title,
+        department: selectedRole?.department,
+        name: applicationData.name,
+        email: applicationData.email,
+        phone: applicationData.phone,
+        experience: applicationData.experience,
+        portfolio: applicationData.portfolio,
+        coverLetter: applicationData.coverLetter,
+        appliedAt: new Date(),
+        status: 'new'
+      });
+
+      setSubmitMessage('Application submitted successfully! We\'ll get back to you soon.');
+      setApplicationData({
+        name: '',
+        email: '',
+        phone: '',
+        experience: '',
+        portfolio: '',
+        coverLetter: ''
+      });
+      
+      setTimeout(() => {
+        setShowApplicationModal(false);
+        setSubmitMessage('');
+      }, 2000);
+    } catch (error) {
+      setSubmitMessage('Something went wrong. Please try again.');
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
+
+  const openApplicationModal = (role: any) => {
+    setSelectedRole(role);
+    setShowApplicationModal(true);
+  };
 
   const cultureValues = [
     {
@@ -369,7 +429,10 @@ const Careers: React.FC = () => {
                 </div>
 
                 <div className="bg-gray-50 dark:bg-gray-800 px-8 py-4">
-                  <button className="w-full bg-blue-600 hover:bg-blue-700 text-white py-3 rounded-lg font-semibold transition-all duration-200 transform hover:scale-105">
+                  <button 
+                    onClick={() => openApplicationModal(role)}
+                    className="w-full bg-blue-600 hover:bg-blue-700 text-white py-3 rounded-lg font-semibold transition-all duration-200 transform hover:scale-105"
+                  >
                     Apply Now
                   </button>
                 </div>
@@ -437,6 +500,137 @@ const Careers: React.FC = () => {
           </p>
         </div>
       </section>
+
+      {/* Application Modal */}
+      {showApplicationModal && (
+        <div className="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center p-4">
+          <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-2xl w-full max-w-2xl max-h-[90vh] overflow-y-auto">
+            <div className="p-8">
+              <div className="flex justify-between items-center mb-6">
+                <h2 className="text-2xl font-bold text-gray-900 dark:text-white">
+                  Apply for {selectedRole?.title}
+                </h2>
+                <button
+                  onClick={() => setShowApplicationModal(false)}
+                  className="text-gray-400 hover:text-gray-600 dark:hover:text-gray-300"
+                >
+                  <X size={24} />
+                </button>
+              </div>
+
+              {submitMessage && (
+                <div className="mb-6 p-4 bg-green-50 dark:bg-green-900/20 border border-green-200 dark:border-green-800 rounded-lg">
+                  <p className="text-green-600 dark:text-green-400">{submitMessage}</p>
+                </div>
+              )}
+
+              <form onSubmit={handleApplicationSubmit} className="space-y-6">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                      Full Name *
+                    </label>
+                    <input
+                      type="text"
+                      required
+                      value={applicationData.name}
+                      onChange={(e) => setApplicationData({...applicationData, name: e.target.value})}
+                      className="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent dark:bg-gray-700 dark:text-white"
+                      placeholder="Your full name"
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                      Email Address *
+                    </label>
+                    <input
+                      type="email"
+                      required
+                      value={applicationData.email}
+                      onChange={(e) => setApplicationData({...applicationData, email: e.target.value})}
+                      className="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent dark:bg-gray-700 dark:text-white"
+                      placeholder="your.email@example.com"
+                    />
+                  </div>
+                </div>
+
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                      Phone Number *
+                    </label>
+                    <input
+                      type="tel"
+                      required
+                      value={applicationData.phone}
+                      onChange={(e) => setApplicationData({...applicationData, phone: e.target.value})}
+                      className="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent dark:bg-gray-700 dark:text-white"
+                      placeholder="+91 9876543210"
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                      Years of Experience *
+                    </label>
+                    <input
+                      type="text"
+                      required
+                      value={applicationData.experience}
+                      onChange={(e) => setApplicationData({...applicationData, experience: e.target.value})}
+                      className="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent dark:bg-gray-700 dark:text-white"
+                      placeholder="e.g., 3 years"
+                    />
+                  </div>
+                </div>
+
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                    Portfolio/Resume Link
+                  </label>
+                  <input
+                    type="url"
+                    value={applicationData.portfolio}
+                    onChange={(e) => setApplicationData({...applicationData, portfolio: e.target.value})}
+                    className="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent dark:bg-gray-700 dark:text-white"
+                    placeholder="https://your-portfolio.com or Google Drive link"
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                    Cover Letter *
+                  </label>
+                  <textarea
+                    required
+                    rows={6}
+                    value={applicationData.coverLetter}
+                    onChange={(e) => setApplicationData({...applicationData, coverLetter: e.target.value})}
+                    className="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent dark:bg-gray-700 dark:text-white resize-none"
+                    placeholder="Tell us why you're interested in this role and what makes you a great fit..."
+                  />
+                </div>
+
+                <div className="flex justify-end space-x-4">
+                  <button
+                    type="button"
+                    onClick={() => setShowApplicationModal(false)}
+                    className="px-6 py-3 border border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors"
+                  >
+                    Cancel
+                  </button>
+                  <button
+                    type="submit"
+                    disabled={isSubmitting}
+                    className="px-6 py-3 bg-blue-600 hover:bg-blue-700 text-white rounded-lg font-semibold transition-all duration-200 disabled:opacity-50"
+                  >
+                    {isSubmitting ? 'Submitting...' : 'Submit Application'}
+                  </button>
+                </div>
+              </form>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 };

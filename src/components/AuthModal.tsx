@@ -320,15 +320,13 @@ const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose, mode, onModeChan
               <span className="text-sm font-medium">Email</span>
             </button>
             <button
-              onClick={() => handleAuthMethodChange('phone')}
-              className={`p-3 rounded-lg border-2 transition-all ${
-                authMethod === 'phone'
-                  ? 'border-blue-600 bg-blue-50 dark:bg-blue-900/20 text-blue-600 dark:text-blue-400'
-                  : 'border-gray-200 dark:border-gray-600 text-gray-600 dark:text-gray-400'
-              }`}
+              onClick={() => alert('Phone authentication coming soon!')}
+              className="p-3 rounded-lg border-2 border-gray-200 dark:border-gray-600 text-gray-400 dark:text-gray-500 cursor-not-allowed opacity-50"
+              disabled
             >
               <Phone className="w-5 h-5 mx-auto mb-1" />
               <span className="text-sm font-medium">Phone</span>
+              <span className="text-xs block">Coming Soon</span>
             </button>
           </div>
 

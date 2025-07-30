@@ -1,7 +1,8 @@
+
 import React, { useState, useEffect } from 'react';
 import { useAuth } from '../contexts/AuthContext';
 import { db } from '../config/firebase';
-import { doc, updateDoc, onSnapshot } from 'firebase/firestore';
+import { doc, updateDoc, onSnapshot, setDoc } from 'firebase/firestore';
 
 const bloodGroups = [
   '', 'A+', 'A-', 'B+', 'B-', 'AB+', 'AB-', 'O+', 'O-'
@@ -40,16 +41,76 @@ const Profile: React.FC = () => {
   // Real-time sync with Firestore
   useEffect(() => {
     if (!currentUser) return;
-    const unsub = onSnapshot(doc(db, 'users', currentUser.uid), (docSnap) => {
+    
+    const unsubscribers: (() => void)[] = [];
+    
+    // Listen to main profile
+    const profileUnsub = onSnapshot(doc(db, 'Profile', currentUser.uid), (docSnap) => {
       if (docSnap.exists()) {
         const data = docSnap.data();
-        setProfile((prev) => ({
+        setProfile(prev => ({
           ...prev,
-          ...data,
+          email: data.email || '',
+          phoneNumber: data.phoneNumber || '',
+          fullName: data.displayName || ''
         }));
       }
     });
-    return () => unsub();
+    unsubscribers.push(profileUnsub);
+    
+    // Listen to Basic Information
+    const basicInfoUnsub = onSnapshot(doc(db, 'Profile', currentUser.uid, 'Basic Information', 'data'), (docSnap) => {
+      if (docSnap.exists()) {
+        const data = docSnap.data();
+        setProfile(prev => ({
+          ...prev,
+          gender: data.gender || '',
+          dob: data.dob || '',
+          bloodGroup: data.bloodGroup || '',
+          emergencyContactName: data.emergencyContactName || '',
+          emergencyContactNumber: data.emergencyContactNumber || ''
+        }));
+      }
+    });
+    unsubscribers.push(basicInfoUnsub);
+    
+    // Listen to Contact Information
+    const contactInfoUnsub = onSnapshot(doc(db, 'Profile', currentUser.uid, 'Contact Information', 'data'), (docSnap) => {
+      if (docSnap.exists()) {
+        const data = docSnap.data();
+        setProfile(prev => ({
+          ...prev,
+          alternateNumber: data.alternateNumber || '',
+          address: data.address || '',
+          city: data.city || '',
+          state: data.state || '',
+          pincode: data.pincode || '',
+          country: data.country || ''
+        }));
+      }
+    });
+    unsubscribers.push(contactInfoUnsub);
+    
+    // Listen to Health Profile
+    const healthProfileUnsub = onSnapshot(doc(db, 'Profile', currentUser.uid, 'Health Profile', 'data'), (docSnap) => {
+      if (docSnap.exists()) {
+        const data = docSnap.data();
+        setProfile(prev => ({
+          ...prev,
+          height: data.height || '',
+          weight: data.weight || '',
+          allergies: data.allergies || '',
+          chronic: data.chronic || '',
+          medications: data.medications || '',
+          familyHistory: data.familyHistory || ''
+        }));
+      }
+    });
+    unsubscribers.push(healthProfileUnsub);
+    
+    return () => {
+      unsubscribers.forEach(unsub => unsub());
+    };
   }, [currentUser]);
 
   // Calculate age and BMI
@@ -80,11 +141,61 @@ const Profile: React.FC = () => {
     e.preventDefault();
     if (!currentUser) return;
     setSaving(true);
-    const userRef = doc(db, 'users', currentUser.uid);
-    await updateDoc(userRef, profile);
-    setSaving(false);
-    setSuccess(true);
-    setTimeout(() => setSuccess(false), 2000);
+    
+    try {
+      // Update main profile
+      await setDoc(doc(db, 'Profile', currentUser.uid), {
+        displayName: profile.fullName,
+        email: profile.email,
+        phoneNumber: profile.phoneNumber,
+        updatedAt: new Date()
+      }, { merge: true });
+      
+      // Update Basic Information
+      await setDoc(doc(db, 'Profile', currentUser.uid, 'Basic Information', 'data'), {
+        firstName: profile.fullName.split(' ')[0] || '',
+        lastName: profile.fullName.split(' ').slice(1).join(' ') || '',
+        gender: profile.gender,
+        dob: profile.dob,
+        age: profile.age,
+        bloodGroup: profile.bloodGroup,
+        emergencyContactName: profile.emergencyContactName,
+        emergencyContactNumber: profile.emergencyContactNumber,
+        updatedAt: new Date()
+      }, { merge: true });
+      
+      // Update Contact Information
+      await setDoc(doc(db, 'Profile', currentUser.uid, 'Contact Information', 'data'), {
+        email: profile.email,
+        phoneNumber: profile.phoneNumber,
+        alternateNumber: profile.alternateNumber,
+        address: profile.address,
+        city: profile.city,
+        state: profile.state,
+        pincode: profile.pincode,
+        country: profile.country,
+        updatedAt: new Date()
+      }, { merge: true });
+      
+      // Update Health Profile
+      await setDoc(doc(db, 'Profile', currentUser.uid, 'Health Profile', 'data'), {
+        height: profile.height,
+        weight: profile.weight,
+        bmi: profile.bmi,
+        allergies: profile.allergies,
+        chronic: profile.chronic,
+        medications: profile.medications,
+        familyHistory: profile.familyHistory,
+        updatedAt: new Date()
+      }, { merge: true });
+      
+      setSaving(false);
+      setSuccess(true);
+      setTimeout(() => setSuccess(false), 2000);
+    } catch (error) {
+      console.error('Error saving profile:', error);
+      setSaving(false);
+    }
   };
 
   return (

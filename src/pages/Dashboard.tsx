@@ -9,7 +9,7 @@ const Dashboard: React.FC = () => {
 
   useEffect(() => {
     if (!currentUser) return;
-    const unsub = onSnapshot(doc(db, 'users', currentUser.uid), (docSnap) => {
+    const unsub = onSnapshot(doc(db, 'Profile', currentUser.uid), (docSnap) => {
       setUserData(docSnap.exists() ? docSnap.data() : null);
     });
     return () => unsub();

@@ -1,5 +1,7 @@
 import React, { useState } from 'react';
 import { Mail, CheckCircle, AlertCircle } from 'lucide-react';
+import { db } from '../config/firebase';
+import { collection, addDoc, query, where, getDocs } from 'firebase/firestore';
 
 interface NewsletterProps {
   variant?: 'inline' | 'modal' | 'footer';
@@ -16,21 +18,44 @@ const Newsletter: React.FC<NewsletterProps> = ({ variant = 'inline', className =
     setStatus('loading');
 
     try {
+      // Check if email already exists
+      const existingEmailQuery = query(
+        collection(db, 'Newsletter'),
+        where('email', '==', email)
+      );
+      const existingEmails = await getDocs(existingEmailQuery);
+
+      if (!existingEmails.empty) {
+        setMessage('You\'re already subscribed to our newsletter!');
+        setEmail('');
+        setStatus('idle');
+        return;
+      }
+
+      // Save to Firestore
+      await addDoc(collection(db, 'Newsletter'), {
+        email,
+        source: 'newsletter',
+        subscribedAt: new Date(),
+        status: 'active'
+      });
+
+      // Also send via email
       const response = await fetch('https://formspree.io/f/xannelqp', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({
-          email: email,
+          email,
+          source: 'newsletter',
           _subject: 'Newsletter Subscription - Mediokart',
-          message: 'New newsletter subscription request'
         }),
       });
 
       if (response.ok) {
         setStatus('success');
-        setMessage('Successfully subscribed! Welcome to the Mediokart community.');
+        setMessage('Thank you for subscribing! You\'ll receive updates about AuraBox and our healthcare innovations.');
         setEmail('');
       } else {
         throw new Error('Subscription failed');
@@ -38,6 +63,8 @@ const Newsletter: React.FC<NewsletterProps> = ({ variant = 'inline', className =
     } catch (error) {
       setStatus('error');
       setMessage('Something went wrong. Please try again.');
+    } finally {
+      setStatus('idle');
     }
   };
 
