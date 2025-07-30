@@ -3,8 +3,10 @@ import { Mail, Phone, MapPin, Clock, Send, MessageSquare, Users, Building, Check
 import { useInView } from 'react-intersection-observer';
 import { db } from '../config/firebase';
 import { collection, addDoc } from 'firebase/firestore';
+import { useAuth } from '../context/AuthContext'; // Import useAuth
 
 const Contact: React.FC = () => {
+  const { currentUser } = useAuth();
   const [heroRef, heroInView] = useInView({ triggerOnce: true, threshold: 0.1 });
   const [contactRef, contactInView] = useInView({ triggerOnce: true, threshold: 0.1 });
 
@@ -67,6 +69,19 @@ const Contact: React.FC = () => {
     });
   };
 
+  const trackActivity = async (userId: string, activityType: string, details: any) => {
+    try {
+      await addDoc(collection(db, 'Activity'), {
+        userId: userId,
+        type: activityType,
+        details: details,
+        timestamp: new Date(),
+      });
+    } catch (error) {
+      console.error("Error tracking activity:", error);
+    }
+  };
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setFormStatus('loading');
@@ -83,6 +98,15 @@ const Contact: React.FC = () => {
         submittedAt: new Date(),
         status: 'new'
       });
+
+      // Track activity if user is logged in
+      if (currentUser) {
+        await trackActivity(currentUser.uid, 'contact_form_submission', {
+          subject: formData.subject,
+          inquiryType: formData.inquiryType,
+          timestamp: new Date()
+        });
+      }
 
       // Also send via email
       const response = await fetch('https://formspree.io/f/mzzbjoag', {

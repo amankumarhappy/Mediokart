@@ -2,7 +2,7 @@
 import { initializeApp } from 'firebase/app';
 import { initializeAppCheck, ReCaptchaV3Provider } from 'firebase/app-check';
 import { getAuth, GoogleAuthProvider } from 'firebase/auth';
-import { getFirestore } from 'firebase/firestore';
+import { getFirestore, addDoc, collection } from 'firebase/firestore';
 import { getAnalytics } from 'firebase/analytics';
 
 const firebaseConfig = {
@@ -88,5 +88,20 @@ export const countryCodes = [
   { code: '+971', country: 'UAE', flag: '🇦🇪' },
   { code: '+966', country: 'Saudi Arabia', flag: '🇸🇦' }
 ];
+
+// Activity tracking function
+export const trackActivity = async (userId: string, activityType: string, details: any) => {
+  try {
+    await addDoc(collection(db, 'Activities'), {
+      userId,
+      activityType,
+      details,
+      timestamp: new Date(),
+      createdAt: new Date()
+    });
+  } catch (error) {
+    console.warn('Failed to track activity:', error);
+  }
+};
 
 export default app;

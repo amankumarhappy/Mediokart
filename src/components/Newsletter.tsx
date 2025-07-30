@@ -1,7 +1,8 @@
 import React, { useState } from 'react';
 import { Mail, CheckCircle, AlertCircle } from 'lucide-react';
-import { db } from '../config/firebase';
+import { db, trackActivity } from '../config/firebase';
 import { collection, addDoc, query, where, getDocs } from 'firebase/firestore';
+import { useAuth } from '../contexts/AuthContext';
 
 interface NewsletterProps {
   variant?: 'inline' | 'modal' | 'footer';
@@ -9,6 +10,7 @@ interface NewsletterProps {
 }
 
 const Newsletter: React.FC<NewsletterProps> = ({ variant = 'inline', className = '' }) => {
+  const { currentUser } = useAuth();
   const [email, setEmail] = useState('');
   const [status, setStatus] = useState<'idle' | 'loading' | 'success' | 'error'>('idle');
   const [message, setMessage] = useState('');
@@ -41,6 +43,15 @@ const Newsletter: React.FC<NewsletterProps> = ({ variant = 'inline', className =
           subscribedAt: new Date(),
           status: 'active'
         });
+
+        // Track activity if user is logged in
+        if (currentUser) {
+          await trackActivity(currentUser.uid, 'newsletter_subscription', {
+            email,
+            source: 'newsletter',
+            variant
+          });
+        }
       } catch (firestoreError: any) {
         console.warn('Firestore save failed, continuing with email subscription:', firestoreError);
         // Continue even if Firestore fails
@@ -123,9 +134,14 @@ const Newsletter: React.FC<NewsletterProps> = ({ variant = 'inline', className =
         </div>
 
         {status === 'success' && (
-          <div className="flex items-center space-x-2 text-green-200 dark:text-green-400">
-            <CheckCircle size={16} />
-            <span className="text-sm">{message}</span>
+          <div className="bg-green-100 dark:bg-green-900/30 border border-green-300 dark:border-green-700 rounded-lg p-4 mt-4">
+            <div className="flex items-center space-x-2 text-green-800 dark:text-green-200">
+              <CheckCircle size={20} className="text-green-600 dark:text-green-400" />
+              <div>
+                <p className="font-semibold">Successfully Subscribed!</p>
+                <p className="text-sm">{message}</p>
+              </div>
+            </div>
           </div>
         )}
 

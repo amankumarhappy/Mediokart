@@ -1,7 +1,7 @@
 
 import React, { useState, useEffect } from 'react';
 import { useAuth } from '../contexts/AuthContext';
-import { db } from '../config/firebase';
+import { db, trackActivity } from '../config/firebase';
 import { doc, updateDoc, onSnapshot, setDoc } from 'firebase/firestore';
 
 const bloodGroups = [
@@ -205,6 +205,12 @@ const Profile: React.FC = () => {
         console.warn('Failed to update health profile:', error);
       }
       
+      // Track profile update activity
+      await trackActivity(currentUser.uid, 'profile_update', {
+        sections: ['basic_information', 'contact_information', 'health_profile'],
+        timestamp: new Date()
+      });
+
       setSaving(false);
       setSuccess(true);
       setTimeout(() => setSuccess(false), 3000);

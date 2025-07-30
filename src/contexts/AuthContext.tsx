@@ -17,7 +17,7 @@ import {
   ConfirmationResult
 } from 'firebase/auth';
 import { doc, setDoc, getDoc } from 'firebase/firestore';
-import { auth, db, googleProvider } from '../config/firebase';
+import { auth, db, googleProvider, trackActivity } from '../config/firebase';
 
 interface UserData {
   uid: string;
@@ -160,6 +160,11 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     try {
       await updateProfile(user, { displayName: name });
       await createUserDocument(user, 'email', name);
+      await trackActivity(user.uid, 'user_signup', {
+        method: 'email',
+        displayName: name,
+        email
+      });
     } catch (error: any) {
       console.warn('Could not create user profile document:', error);
       // Don't fail signup if profile creation fails
@@ -178,6 +183,10 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       await setDoc(doc(db, 'Profile', user.uid), {
         lastLoginAt: new Date()
       }, { merge: true });
+      await trackActivity(user.uid, 'user_login', {
+        method: 'email',
+        email
+      });
     } catch (error: any) {
       console.warn('Could not update lastLoginAt:', error);
       // Don't fail login if we can't update the timestamp
@@ -194,6 +203,11 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
     try {
       await createUserDocument(user, 'google');
+      await trackActivity(user.uid, 'user_login', {
+        method: 'google',
+        email: user.email,
+        displayName: user.displayName
+      });
     } catch (error: any) {
       console.warn('Could not create user profile document for Google user:', error);
       // Don't fail login if profile creation fails
