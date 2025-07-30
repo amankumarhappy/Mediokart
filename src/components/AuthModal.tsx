@@ -501,10 +501,9 @@ const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose, mode, onModeChan
                           {showConfirmPassword ? <EyeOff size={20} /> : <Eye size={20} />}
                         </button>
                       </div>
-                  </div>
-                )}
-              </>
-            </div>
+                    </div>
+                  )}
+                </>
               )}
 
               {authMethod === 'phone' && (

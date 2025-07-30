@@ -65,7 +65,7 @@ export const countryCodes = [
   { code: '+61', country: 'Australia', flag: '🇦🇺' },
   { code: '+82', country: 'South Korea', flag: '🇰🇷' },
   { code: '+65', country: 'Singapore', flag: '🇸🇬' },
-  { code: '+971', country: 'UAE', flag: '🇦🇪' }' },
+  { code: '+971', country: 'UAE', flag: '🇦🇪' },
   { code: '+966', country: 'Saudi Arabia', flag: '🇸🇦' }
 ];
 
