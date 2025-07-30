@@ -73,7 +73,7 @@ const FloatingButtons: React.FC<FloatingButtonsProps> = ({
   const [imageCaption, setImageCaption] = useState('');
   const [showImageCaption, setShowImageCaption] = useState(false);
   const [pendingImage, setPendingImage] = useState<string | null>(null);
-  
+
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const recognitionRef = useRef<SpeechRecognition | null>(null);
 
@@ -579,7 +579,7 @@ Query: ${message}\n${caption ? `Caption: ${caption}` : ''}\n\nMEDIOKART INFORMAT
   // PWA install handler
   useEffect(() => {
     if (!showInstallPrompt) return;
-    
+
     window.addEventListener('beforeinstallprompt', (e) => {
       e.preventDefault();
       setDeferredPrompt(e);
@@ -708,6 +708,8 @@ Query: ${message}\n${caption ? `Caption: ${caption}` : ''}\n\nMEDIOKART INFORMAT
                     className="p-1 rounded text-blue-600 dark:text-blue-400 hover:text-blue-700 dark:hover:text-blue-300"
                     title="Go to latest"
                   >
+The code structure is corrected after removing the incomplete character 'c'.```text
+
                     <ArrowDown size={14} className="animate-bounce" />
                   </button>
                 </div>
