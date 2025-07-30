@@ -87,54 +87,40 @@ const Contact: React.FC = () => {
     setFormStatus('loading');
 
     try {
-      // Save to Firestore
-      await addDoc(collection(db, 'Contact'), {
-        name: formData.name,
-        email: formData.email,
-        company: formData.company,
-        inquiryType: formData.inquiryType,
-        subject: formData.subject,
-        message: formData.message,
-        submittedAt: new Date(),
-        status: 'new'
-      });
+      const submitData = new FormData();
 
-      // Track activity if user is logged in
-      if (currentUser) {
-        await trackActivity(currentUser.uid, 'contact_form_submission', {
-          subject: formData.subject,
-          inquiryType: formData.inquiryType,
-          timestamp: new Date()
-        });
-      }
+      // Add form data
+      submitData.append('name', formData.name);
+      submitData.append('email', formData.email);
+      submitData.append('company', formData.company);
+      submitData.append('inquiryType', formData.inquiryType);
+      submitData.append('subject', formData.subject);
+      submitData.append('message', formData.message);
 
-      // Also send via email
-      const response = await fetch('https://formspree.io/f/mzzbjoag', {
+      // Add hidden fields for FormSubmit
+      submitData.append('_subject', `Contact Form: ${formData.subject}`);
+      submitData.append('_next', window.location.href);
+      submitData.append('_captcha', 'false');
+
+      const response = await fetch('https://formsubmit.co/mediokart@zohomail.in', {
         method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          name: formData.name,
-          email: formData.email,
-          company: formData.company,
-          inquiryType: formData.inquiryType,
-          subject: formData.subject,
-          message: formData.message,
-          _subject: `Contact Form: ${formData.subject}`,
-        }),
+        body: submitData
       });
 
-      setFormStatus('success');
-      setStatusMessage('Thank you for your message! We\'ll get back to you within 24 hours.');
-      setFormData({
-        name: '',
-        email: '',
-        company: '',
-        inquiryType: 'general',
-        subject: '',
-        message: ''
-      });
+      if (response.ok) {
+        setFormStatus('success');
+        setStatusMessage('Thank you for your message! We\'ll get back to you within 24 hours.');
+        setFormData({
+          name: '',
+          email: '',
+          company: '',
+          inquiryType: 'general',
+          subject: '',
+          message: ''
+        });
+      } else {
+        throw new Error('Form submission failed');
+      }
     } catch (error) {
       setFormStatus('error');
       setStatusMessage('Something went wrong. Please try again or contact us directly.');

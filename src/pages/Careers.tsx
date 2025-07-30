@@ -1,8 +1,7 @@
 import React, { useState } from 'react';
 import { Users, Lightbulb, TrendingUp, Heart, Code, Pen, Video, Palette, Brain, DollarSign, Stethoscope, Megaphone, ArrowRight, X } from 'lucide-react';
 import { useInView } from 'react-intersection-observer';
-import { db } from '../config/firebase';
-import { collection, addDoc } from 'firebase/firestore';
+
 
 const Careers: React.FC = () => {
   const [heroRef, heroInView] = useInView({ triggerOnce: true, threshold: 0.1 });
@@ -40,58 +39,72 @@ const Careers: React.FC = () => {
     setIsSubmitting(true);
 
     try {
-      // Get collection name based on role title
-      const getCollectionName = (roleTitle: string) => {
-        const roleMap: { [key: string]: string } = {
-          'Co-founder Positions': 'Co-founder Positions',
-          'Frontend/Backend Developers': 'Frontend Backend Devm',
-          'AI/ML Engineers': 'AI ML Engineers',
-          'UI/UX Designers': 'UI UX Designers',
-          'Content Writers': 'Content Writers',
-          'Video Editors': 'Video Editors',
-          'Healthcare Professionals': 'Healthcare Professiom',
-          'Digital Marketing Specialists': 'Digital Marketing Spm'
-        };
-        return roleMap[roleTitle] || 'Careers';
-      };
-
-      const collectionName = getCollectionName(selectedRole?.title || '');
+      const formData = new FormData();
       
-      await addDoc(collection(db, collectionName), {
-        ...applicationData,
-        role: selectedRole?.title,
-        department: selectedRole?.department,
-        appliedAt: new Date(),
-        status: 'new'
+      // Add all application data to FormData
+      formData.append('name', applicationData.name);
+      formData.append('email', applicationData.email);
+      formData.append('phone', applicationData.phone);
+      formData.append('role', selectedRole?.title || '');
+      formData.append('department', selectedRole?.department || '');
+      formData.append('experience', applicationData.experience);
+      formData.append('portfolio', applicationData.portfolio);
+      formData.append('coverLetter', applicationData.coverLetter);
+      formData.append('skills', applicationData.skills);
+      formData.append('tools', applicationData.tools);
+      formData.append('availability', applicationData.availability);
+      formData.append('motivation', applicationData.motivation);
+      formData.append('project', applicationData.project);
+      formData.append('linkedin', applicationData.linkedin);
+      formData.append('github', applicationData.github);
+      formData.append('position', applicationData.position);
+      formData.append('specialization', applicationData.specialization);
+      formData.append('registration', applicationData.registration);
+      formData.append('location', applicationData.location);
+      formData.append('budget', applicationData.budget);
+      formData.append('campaignLinks', applicationData.campaignLinks);
+      
+      // Add hidden fields for FormSubmit
+      formData.append('_subject', `New Career Application: ${selectedRole?.title}`);
+      formData.append('_next', window.location.href);
+      formData.append('_captcha', 'false');
+
+      const response = await fetch('https://formsubmit.co/mediokart@zohomail.in', {
+        method: 'POST',
+        body: formData
       });
 
-      setSubmitMessage('Application submitted successfully! We\'ll get back to you soon.');
-      setApplicationData({
-        name: '',
-        email: '',
-        phone: '',
-        experience: '',
-        portfolio: '',
-        coverLetter: '',
-        skills: '',
-        tools: '',
-        availability: '',
-        motivation: '',
-        project: '',
-        linkedin: '',
-        github: '',
-        position: '',
-        specialization: '',
-        registration: '',
-        location: '',
-        budget: '',
-        campaignLinks: ''
-      });
-      
-      setTimeout(() => {
-        setShowApplicationModal(false);
-        setSubmitMessage('');
-      }, 2000);
+      if (response.ok) {
+        setSubmitMessage('Application submitted successfully! We\'ll get back to you soon.');
+        setApplicationData({
+          name: '',
+          email: '',
+          phone: '',
+          experience: '',
+          portfolio: '',
+          coverLetter: '',
+          skills: '',
+          tools: '',
+          availability: '',
+          motivation: '',
+          project: '',
+          linkedin: '',
+          github: '',
+          position: '',
+          specialization: '',
+          registration: '',
+          location: '',
+          budget: '',
+          campaignLinks: ''
+        });
+        
+        setTimeout(() => {
+          setShowApplicationModal(false);
+          setSubmitMessage('');
+        }, 2000);
+      } else {
+        throw new Error('Form submission failed');
+      }
     } catch (error) {
       setSubmitMessage('Something went wrong. Please try again.');
     } finally {
