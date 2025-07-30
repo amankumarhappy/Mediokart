@@ -1,0 +1,1495 @@
+as a co founder
+
+
+ChatGPT said:
+Here is a complete and detailed set of questions for the "Career" section of Mediokart specifically designed for Co-Founder applications. These questions aim to assess the applicant's vision alignment, skills, mindset, risk-taking ability, leadership style, and long-term commitment.
+
+🚀 Join Mediokart as a Co-Founder
+Be a part of India’s most ambitious health-tech & AI startup. We’re not looking for employees — we’re looking for believers, dreamers, and doers who are ready to build history.
+
+👤 Basic Details
+Full Name:
+
+Email Address:
+
+Phone Number:
+
+LinkedIn Profile (if any):
+
+City & State of Residence:
+
+Age:
+
+Educational Background:
+
+Are you currently employed or a student? Please specify.
+
+💡 Vision & Belief
+Why do you want to join Mediokart as a co-founder?
+
+What excites you the most about the vision and mission of Mediokart?
+
+What are your thoughts on revolutionizing healthcare through AI, IoT, and biotechnology in India?
+
+How do you see your role in Mediokart 3 years from now?
+
+Have you ever thought about changing the world? How?
+
+⚙️ Skills & Experience
+What core skills or expertise would you bring to the team?
+
+Rate your skills in the following areas (1 to 5):
+
+Product Development
+
+Technology (AI/ML, App/Web Dev)
+
+Operations & Team Management
+
+Marketing & Branding
+
+Fundraising & Finance
+
+UI/UX & Design Thinking
+
+Legal & Compliance
+
+Have you previously worked in a startup or led a project? Briefly describe.
+
+What’s one project or achievement you are most proud of?
+
+💭 Mindset & Personality
+How do you handle failure and uncertainty?
+
+Are you comfortable with taking risks and working without a fixed salary in the beginning phase?
+
+Are you willing to invest your time, energy, and learn new skills rapidly?
+
+How do you define leadership?
+
+How do you manage conflicts within a team?
+
+🧩 Commitment & Compatibility
+How many hours per week can you dedicate to Mediokart in the next 3-6 months?
+
+Are you willing to relocate or travel if needed for company growth?
+
+What is your expected role/title if selected as a co-founder?
+
+Can you contribute financially or through resources in the initial stages? (Optional but appreciated)
+
+Do you have any existing obligations (college, job, business) that might affect your availability?
+
+🎯 Vision Test
+Imagine Mediokart just raised $2M. What would your top 3 priorities be?
+
+Suggest a product feature or service that you believe would create major impact through Mediokart.
+
+Who is your inspiration in the startup world and why?
+
+📎 Attachments (Optional but Powerful)
+Upload your CV/Resume (if available)
+
+Share a one-minute video introduction explaining why you’re the right co-founder for Mediokart
+
+Include any portfolio, project links, or past startup experience
+
+✅ Final Question
+Are you truly ready to commit to a startup journey full of uncertainty, long hours, learning curves, and the possibility of building something that changes millions of lives?
+
+🙌 Let’s build the future of Indian healthcare — together.
+
+Apply now. This isn’t just a role — it’s a revolution.
+
+Would you like a Google Form version or website code of this as well?
+
+
+
+
+
+
+
+
+You said:
+now give me idea for Frontend/Backend Developers form
+
+
+ChatGPT said:
+Here’s a complete set of form questions to recruit Frontend/Backend Developers for Mediokart through your Career page — crafted to assess technical skill, mindset, startup-fit, and alignment with Mediokart’s mission.
+
+You can customize this for:
+
+Frontend Developers
+
+Backend Developers
+
+Or make a combined "Full Stack Developer" form by including both sets.
+
+🧑‍💻 Join Mediokart as a Frontend/Backend Developer
+Help us revolutionize health-tech in India with world-class code.
+We’re not just building products — we’re building impact.
+
+👤 Basic Info
+Full Name:
+
+Email Address:
+
+Phone Number:
+
+Portfolio/Personal Website (if any):
+
+GitHub/Code Repository Link:
+
+LinkedIn Profile:
+
+Location (City, State):
+
+Are you a student or working professional?
+
+Availability (Part-time / Full-time / Internship):
+
+💻 Technical Skills
+Which role are you applying for?
+
+☐ Frontend Developer
+
+☐ Backend Developer
+
+☐ Full Stack Developer
+
+Frontend Developer Specific (if selected)
+Which technologies do you work with? (Select all that apply)
+
+☐ HTML5/CSS3
+
+☐ JavaScript
+
+☐ React.js / Next.js
+
+☐ TailwindCSS / Bootstrap
+
+☐ Redux / Zustand / Context API
+
+☐ UI/UX Design (Figma/Adobe XD)
+
+☐ Others (please specify): ___________
+
+Have you built any responsive, mobile-first websites or dashboards? (Links encouraged)
+
+Backend Developer Specific (if selected)
+Which backend tools do you use? (Select all that apply)
+
+☐ Node.js
+
+☐ Express.js
+
+☐ Firebase / Firestore
+
+☐ MongoDB
+
+☐ PostgreSQL / MySQL
+
+☐ REST APIs
+
+☐ GraphQL
+
+☐ Authentication (OAuth, JWT, Firebase Auth)
+
+☐ DevOps (Docker, CI/CD, etc.)
+
+Have you worked on backend architecture or scalable APIs? Briefly describe or share links.
+
+🧠 Mindset & Experience
+Have you ever worked on a startup, open-source, or real-world project before?
+
+How do you approach debugging or solving unexpected bugs?
+
+Are you comfortable learning new tools/libraries quickly if required?
+
+Share one project you're most proud of. What was your role?
+
+⚙️ Team Fit & Workstyle
+Preferred mode of work:
+
+☐ Remote
+
+☐ Hybrid
+
+☐ Onsite (if required)
+
+Can you collaborate using tools like GitHub, Figma, Notion, and Slack?
+
+How many hours per week can you commit initially?
+
+What excites you about working at Mediokart?
+
+🎯 Bonus Questions
+Have you ever contributed to UI/UX decisions or written clean, scalable code that others reused?
+
+Do you have experience with performance optimization (Lighthouse, SEO, lazy loading, etc.)?
+
+Are you willing to work on high-impact, deadline-driven projects?
+
+📎 Upload Section
+Upload your resume (PDF)
+
+Share any project screenshots, app links, or hosted demos
+
+(Optional) Share a 30-sec video of you talking about why you want to join Mediokart
+
+✅ Final Question
+Are you ready to join a mission-first team building India's next big thing in AI-powered healthcare?
+
+🙌 Let’s build a fast, secure, impactful platform for India together.
+Apply now to be part of Mediokart’s founding tech team.
+
+Would you like:
+
+A Google Form version?
+
+Or a React-based frontend form component to embed on your website?
+
+
+
+
+
+
+
+
+You said:
+AI/ML Engineers write for this
+
+
+ChatGPT said:
+Here’s a complete and carefully structured application form for AI/ML Engineers for Mediokart’s Career page — focused on attracting mission-driven, skilled, and startup-ready engineers who can help build AI-first healthcare tools and intelligent products.
+
+🧠 Join Mediokart as an AI/ML Engineer
+Help us bring intelligence to Indian healthcare using AI, ML, and automation.
+We're building tools that save time, save lives, and learn with every user interaction.
+
+👤 Basic Information
+Full Name:
+
+Email Address:
+
+Phone Number:
+
+LinkedIn Profile (optional):
+
+GitHub / Kaggle / HuggingFace / Portfolio URL (optional):
+
+Location (City, State):
+
+Are you a student or working professional?
+
+Availability:
+
+☐ Part-time
+
+☐ Full-time
+
+☐ Internship
+
+🧪 Technical Skills
+What areas are you most experienced in? (Check all that apply)
+
+☐ Supervised / Unsupervised Learning
+
+☐ Deep Learning (CNN, RNN, Transformers)
+
+☐ Natural Language Processing (NLP)
+
+☐ Computer Vision
+
+☐ Recommendation Systems
+
+☐ Generative AI (LLMs, GANs, Diffusion Models)
+
+☐ Data Cleaning & Preprocessing
+
+☐ MLOps (CI/CD, Model Deployment)
+
+☐ Others (please specify): ___________
+
+Languages and tools you’ve used (Check all that apply):
+
+☐ Python
+
+☐ R
+
+☐ Scikit-Learn
+
+☐ TensorFlow / Keras
+
+☐ PyTorch
+
+☐ OpenCV
+
+☐ LangChain / LlamaIndex
+
+☐ Pandas / NumPy / Matplotlib
+
+☐ Firebase / Supabase / MongoDB
+
+☐ Google Colab / Jupyter / VS Code
+
+Which AI/ML project are you most proud of? Share links or describe it briefly.
+
+🧠 Mindset & Contribution
+What excites you about using AI/ML in the healthcare domain?
+
+Have you deployed any AI model into production or built a working prototype?
+
+How do you approach model evaluation and iteration in real-world problems?
+
+How do you stay updated with latest AI trends (e.g., papers, newsletters, GitHub, etc.)?
+
+Have you ever worked on a team using version control tools like Git or collaborated on AI projects?
+
+🧩 Startup Fit & Collaboration
+How many hours per week can you contribute initially?
+
+Can you work with product teams to turn ideas into ML-powered features?
+
+Are you willing to build MVPs fast, even with limited data and compute?
+
+How do you handle tight deadlines, ambiguity, and rapid iteration?
+
+💡 Optional Bonus
+Have you fine-tuned or trained any LLM or custom transformer model?
+
+Do you have experience building AI chatbots or assistants using LangChain, RAG, Pinecone, etc.?
+
+Are you familiar with data privacy or ethical AI concerns in healthcare?
+
+📎 Upload & Submission
+Upload your Resume/CV (PDF)
+
+Share any:
+
+Kaggle notebooks
+
+GitHub repos
+
+Blog posts
+
+Papers or articles (if any)
+
+(Optional) Share a short video (30–60 seconds) explaining why you want to be part of Mediokart’s AI journey.
+
+✅ Final Question
+Are you ready to solve real problems with real impact, not just train models?
+☐ Yes
+☐ No
+
+🌍 Let’s bring India’s healthcare into the AI era — one intelligent system at a time.
+🚀 Apply now to be a founding AI/ML engineer at Mediokart.
+
+Would you like this as:
+
+A React form component?
+
+A Google Form template?
+
+A Notion-based form for collecting startup-ready talent?
+
+Let me know and I’ll generate the exact format.
+
+
+
+
+
+
+
+
+You said:
+now for AI/ML Engineers
+
+
+ChatGPT said:
+Here's the finalized application form for AI/ML Engineers to be used on Mediokart’s Career section, focused on attracting startup-minded, high-impact engineers who can shape the future of healthcare with AI.
+
+🤖 Apply to Join Mediokart as an AI/ML Engineer
+Redesign the future of healthcare with intelligence.
+Join our mission to build AI-powered tools that will impact millions across India.
+
+🔍 Section 1: Personal & Contact Info
+Full Name
+
+Email Address
+
+Phone Number (WhatsApp preferred)
+
+Location (City, State)
+
+LinkedIn Profile (optional)
+
+GitHub / Kaggle / Portfolio URL (optional)
+
+Are you currently a student or working professional?
+
+Preferred role type
+
+☐ Full-time
+
+☐ Part-time
+
+☐ Internship
+
+☐ Volunteer Contributor
+
+🧠 Section 2: Skills & Tools
+Which areas of AI/ML do you have experience with? (Select all that apply)
+
+☐ Supervised / Unsupervised Learning
+
+☐ Deep Learning (CNNs, RNNs, Transformers)
+
+☐ NLP (Chatbots, LLMs, Text Classification)
+
+☐ Computer Vision
+
+☐ Time Series / Healthcare Data
+
+☐ Recommendation Engines
+
+☐ Reinforcement Learning
+
+☐ RAG, Vector Search, LLM-based Pipelines
+
+Tools & Frameworks you're confident with:
+
+☐ Python
+
+☐ Scikit-learn
+
+☐ TensorFlow / Keras
+
+☐ PyTorch
+
+☐ Pandas / NumPy / Matplotlib
+
+☐ Hugging Face
+
+☐ OpenCV
+
+☐ LangChain / LlamaIndex
+
+☐ Firebase / MongoDB / Supabase
+
+☐ VS Code / Google Colab / Jupyter Notebooks
+
+Which is your most impressive project related to AI/ML?
+(Describe briefly or share a link.)
+
+Have you ever deployed an AI/ML model in a real-world or live environment?
+☐ Yes
+☐ No
+If yes, describe briefly.
+
+🚀 Section 3: Mindset & Mission
+Why do you want to join Mediokart? What excites you about building AI for Indian healthcare? (100-200 words)
+
+How do you approach building models when data is limited, noisy, or unstructured?
+
+How do you stay updated in the fast-changing world of AI?
+(e.g., papers, YouTube, Substacks, GitHub, Arxiv)
+
+Do you have experience with:
+
+☐ LLM Fine-tuning / Prompt Engineering
+
+☐ Retrieval-Augmented Generation (RAG)
+
+☐ LangChain, Pinecone, FAISS, ChromaDB
+
+☐ Chatbot building or Healthcare AI
+(Check all that apply)
+
+🧩 Section 4: Fit & Commitment
+How many hours per week can you commit in the next 3–6 months?
+
+Are you okay with fast iterations, tight deadlines, and working with real users?
+☐ Yes
+☐ No
+
+Are you comfortable working in a founding-stage team where resources may be limited, but creativity is unlimited?
+☐ Yes
+☐ No
+
+Would you be open to a hybrid or remote collaboration model?
+
+📁 Section 5: Uploads & Extras
+Upload your Resume (PDF only)
+
+Share any relevant project links, GitHub repos, demo videos, or blog posts.
+
+(Optional) Upload a short (30–60 sec) video introduction explaining why you’re a perfect fit for Mediokart’s AI team.
+
+✅ Final Confirmation
+Are you ready to join a vision-led team that values courage, code, and compassion over credentials?
+☐ Yes, let’s build the future.
+☐ Not right now.
+
+⚡ We're not hiring job-seekers. We're building with vision-seekers.
+If you're hungry to solve meaningful problems using AI, we want to hear from you.
+
+Would you like me to:
+
+Convert this to a Google Form layout?
+
+Generate the React frontend code for your website’s Careers section?
+
+Create an Airtable-compatible version for managing applicants?
+
+Let me know what format you'd like next.
+
+
+
+
+
+
+
+
+You said:
+Now write for UI/UX Designers
+
+
+ChatGPT said:
+Absolutely! Below is a complete and startup-focused UI/UX Designer application form for the Careers section of Mediokart, crafted to attract passionate, creative, and product-minded designers ready to work on real-world problems in healthcare.
+
+🎨 Join Mediokart as a UI/UX Designer
+Design healthcare experiences that people love to use — fast, simple, accessible, and human-first.
+We’re building India’s most intuitive health-tech platform. You’ll help shape how it feels.
+
+🧍 Section 1: Personal Details
+Full Name
+
+Email Address
+
+Phone Number (WhatsApp preferred)
+
+Location (City, State)
+
+LinkedIn Profile (optional)
+
+Portfolio Website / Dribbble / Behance (Required)
+
+Current Status
+
+☐ Student
+
+☐ Freelancer
+
+☐ Employed
+
+☐ Looking for full-time opportunity
+
+Preferred Work Type
+
+☐ Internship
+
+☐ Part-time
+
+☐ Full-time
+
+☐ Volunteer Contributor
+
+🎯 Section 2: Design Experience
+Which of the following have you worked on? (Select all that apply)
+
+☐ Mobile App Design (iOS/Android)
+
+☐ Web UI/UX Design
+
+☐ Design Systems / Style Guides
+
+☐ UX Research & Wireframing
+
+☐ Prototyping (Clickable or Motion Prototypes)
+
+☐ Healthcare / Healthtech Product Design
+
+☐ Accessibility-Focused UI
+
+Which tools do you use regularly?
+
+☐ Figma
+
+☐ Adobe XD
+
+☐ Illustrator
+
+☐ Photoshop
+
+☐ After Effects / Motion Tools
+
+☐ Canva
+
+☐ Notion / Whimsical / Miro
+
+Share a design project you’re most proud of.
+(Include link and a short explanation of your role and impact.)
+
+Do you have experience working with developers or product teams to implement your designs?
+☐ Yes
+☐ No
+
+💡 Section 3: Design Thinking & Product Mindset
+Why do you want to design for Mediokart?
+(100–200 words about what excites you about designing in healthcare)
+
+How do you approach UX problems when you don't have user data or feedback?
+
+What are the 3 most important things for you in great product design?
+
+Are you comfortable working fast and iteratively in a startup environment?
+☐ Yes
+☐ No
+
+🧠 Section 4: Collaboration & Vision
+Can you work with product teams using tools like Notion, Figma, GitHub, Slack?
+
+Are you willing to work closely with AI/ML engineers, frontend developers, and founders to co-create solutions?
+
+What kind of healthcare app, feature, or screen would you build to solve a real-life problem? (Optional challenge prompt)
+
+Are you open to feedback, design reviews, and continuous learning?
+☐ Yes
+☐ No
+
+📎 Section 5: Uploads & Extras
+Upload your Resume (PDF only)
+
+Upload a case study (if available) or add a Google Drive link
+
+(Optional) Upload a short (30–60 sec) video introducing yourself and why you’d love to design for Mediokart
+
+✅ Final Confirmation
+Are you ready to design for impact, not just for aesthetics?
+☐ Yes, I’m ready.
+☐ Not now.
+
+🩺✨ At Mediokart, design is medicine — it should heal, simplify, and empower.
+If that excites you, we’d love to work with you.
+
+Would you like:
+
+A Figma form template version for UI presentation?
+
+A React code version to embed on your Careers website?
+
+Or a Google Form version for fast applicant collection?
+
+Let me know and I’ll prepare it accordingly.
+
+
+
+
+
+
+
+
+You said:
+now write for Content Writers
+
+
+ChatGPT said:
+Here's a complete and thoughtfully crafted application form for Content Writers for Mediokart’s Career page, built to attract purpose-driven, versatile writers who can create engaging, educational, and SEO-friendly content around health, tech, and startup topics.
+
+✍️ Join Mediokart as a Content Writer
+Craft words that heal, educate, and inspire.
+We're building a health-tech platform where content = care — clear, honest, and human.
+
+🧍 Section 1: Personal Details
+Full Name
+
+Email Address
+
+Phone Number (WhatsApp preferred)
+
+Location (City, State)
+
+LinkedIn Profile (optional)
+
+Portfolio / Blog / Medium / Google Drive Samples (Required)
+
+Current Status
+
+☐ Student
+
+☐ Freelance Writer
+
+☐ Employed
+
+☐ Full-time Job Seeker
+
+Preferred Work Type
+
+☐ Internship
+
+☐ Part-time
+
+☐ Full-time
+
+☐ Volunteer Contributor
+
+🖋 Section 2: Writing Background
+Which type of content are you confident in writing? (Select all that apply)
+
+☐ Blogs & Articles
+
+☐ Website Content
+
+☐ Product Descriptions
+
+☐ Social Media Copy
+
+☐ SEO-Based Long-form Content
+
+☐ Email / Newsletter Content
+
+☐ Medical or Healthcare Writing
+
+☐ Technical / AI / Startup-focused Writing
+
+Which tools/platforms are you familiar with?
+
+☐ WordPress / CMS
+
+☐ Grammarly / Hemingway
+
+☐ Google Docs
+
+☐ Notion
+
+☐ SEO Tools (Ubersuggest, Ahrefs, SurferSEO, etc.)
+
+Share 2–3 links to your best published work or writing samples.
+
+Have you ever written content for a startup or health/tech brand?
+☐ Yes
+☐ No
+If yes, describe briefly.
+
+💡 Section 3: Creativity & Strategy
+What does “good content” mean to you in a healthcare + tech startup? (100–150 words)
+
+How do you research and structure content when writing about a new or complex topic (like AI or medical tech)?
+
+Are you familiar with SEO writing practices like keyword research, meta descriptions, headers, etc.?
+☐ Yes
+☐ Somewhat
+☐ No
+
+Do you write content with a specific audience in mind? How do you define your target reader for Mediokart?
+
+📚 Section 4: Mindset & Fit
+Are you open to working with design, marketing, and tech teams to shape content across platforms?
+
+How many articles or pieces can you commit to each week?
+
+Are you willing to revise content based on feedback from editors/founders?
+☐ Yes
+☐ No
+
+Would you enjoy writing about topics like:
+
+Preventive healthcare
+
+Health-tech innovations
+
+Startup journeys
+
+Personal wellness
+
+AI in healthcare
+☐ Yes, I’m excited
+☐ Not really
+
+📎 Section 5: Uploads & Final Step
+Upload your Resume (PDF only)
+
+Upload a writing sample (or paste link to Google Doc)
+
+(Optional) Upload a short (30–60 sec) video intro of yourself and your writing passion
+
+✅ Final Confirmation
+Are you ready to use your words to create real-world impact through Mediokart?
+☐ Yes, let’s write history.
+☐ Not right now.
+
+📢 **At Mediokart, content is not just marketing — it's information therapy.
+If you believe in the power of writing to educate and empower, we’d love to have you on the team.
+
+Would you like:
+
+A Google Form version for easy sharing?
+
+A Notion form template for startup workflow?
+
+A React/Next.js frontend form for your website?
+
+Let me know and I’ll prepare the exact format you need.
+
+
+
+
+
+
+
+
+You said:
+Content Writers for
+
+
+ChatGPT said:
+Here is the final application form specifically for Content Writers at Mediokart — crafted to attract writers who are passionate about healthcare, startups, technology, and impact-driven content.
+
+📝 Join Mediokart as a Content Writer
+Use your words to educate, influence, and bring clarity to millions.
+Help us build India's most trusted and impactful health-tech platform through storytelling, education, and strategy.
+
+👤 Section 1: Personal Details
+Full Name
+
+Email Address
+
+Phone Number (WhatsApp preferred)
+
+Location (City, State)
+
+LinkedIn Profile (optional)
+
+Portfolio / Blog / Medium / Google Drive Samples (required)
+
+Current Status:
+
+☐ Student
+
+☐ Freelancer
+
+☐ Employed
+
+☐ Looking for Full-time
+
+Preferred Role Type:
+
+☐ Full-time
+
+☐ Part-time
+
+☐ Internship
+
+☐ Volunteer Contributor
+
+✍️ Section 2: Content Expertise
+What types of content are you skilled in? (Select all that apply)
+
+☐ Blog Posts (Health, Startup, Tech)
+
+☐ SEO Writing
+
+☐ Email/Newsletter Campaigns
+
+☐ Website or Product Content
+
+☐ Technical Articles (AI/ML, Healthcare Tech)
+
+☐ Social Media Copy
+
+☐ Script Writing (Videos, Reels, YouTube)
+
+What tools have you worked with before?
+
+☐ WordPress
+
+☐ Google Docs
+
+☐ Notion
+
+☐ Grammarly
+
+☐ SurferSEO / Ubersuggest / SEMrush
+
+Share 2–3 links to your best writing samples or articles.
+
+Have you written content for a startup, medical blog, or tech platform before?
+☐ Yes ☐ No
+If yes, briefly describe the project or link.
+
+💡 Section 3: Creativity + Strategy
+Why do you want to write for Mediokart? (100–150 words)
+
+What makes healthcare or health-tech content unique compared to other niches?
+
+How do you make technical or medical topics interesting and easy to read?
+
+Are you comfortable writing with SEO in mind (keywords, meta descriptions, headings, etc.)?
+☐ Yes ☐ Somewhat ☐ No
+
+Can you adjust your tone/style based on the platform and audience (e.g., blog vs. Instagram vs. product)?
+☐ Yes ☐ No
+
+🤝 Section 4: Mindset & Fit
+How many pieces (blogs, posts, scripts, etc.) can you contribute per week?
+
+Are you open to feedback, editorial revisions, and working with design/development teams?
+☐ Yes ☐ No
+
+Would you be interested in writing:
+
+☐ Patient Education Content
+
+☐ Startup Stories / Founder's Voice
+
+☐ Tech + AI in Healthcare
+
+☐ User Manuals / FAQs
+
+☐ Social Media Captions + Campaigns
+
+Do you prefer:
+
+☐ Ongoing freelance work
+
+☐ Short-term gigs/projects
+
+☐ Becoming a core content team member
+
+📎 Section 5: Uploads & Extras
+Upload your Resume (PDF only)
+
+Upload a writing sample or share a Google Drive link
+
+(Optional) Upload a short 30–60 sec video introducing yourself and why you love content writing
+
+✅ Final Step
+Are you ready to be part of a mission-driven team that values clarity, creativity, and compassion in content?
+☐ Yes, I’m ready
+☐ Not at the moment
+
+🧠 At Mediokart, every blog, line, or caption is a tool for change.
+If you’re excited to turn complexity into clarity, join us.
+
+Let me know if you’d like this as:
+
+✅ Google Form
+
+✅ Typeform / Notion Form
+
+✅ React-based component for your website
+
+✅ PDF printable version for offline outreach
+
+I can generate the exact version you need.
+
+
+
+
+
+
+
+
+You said:
+Video Editors for
+
+
+ChatGPT said:
+Here is a complete and well-structured application form for Video Editors to be added to the Careers page of Mediokart — designed to attract creative, high-speed editors who can turn health-tech ideas into engaging visual content across platforms like YouTube, Instagram, and beyond.
+
+🎬 Join Mediokart as a Video Editor
+Visual storytelling that educates, inspires, and scales impact.
+Be the editor who shapes how India sees health, startups, and change.
+
+👤 Section 1: Personal Information
+Full Name
+
+Email Address
+
+Phone Number (WhatsApp preferred)
+
+Location (City, State)
+
+Instagram / YouTube / LinkedIn (optional)
+
+Portfolio / Google Drive Link / YouTube Channel (required)
+
+Current Status
+
+☐ Student
+
+☐ Freelancer
+
+☐ Employed
+
+☐ Full-time Creator
+
+Preferred Role Type
+
+☐ Full-time
+
+☐ Part-time
+
+☐ Internship
+
+☐ Volunteer Contributor
+
+🎞️ Section 2: Editing Skills & Tools
+Which type of videos can you confidently edit? (Select all that apply)
+
+☐ Reels / Shorts
+
+☐ YouTube Videos (Talking-head, Vlogs, Explainers)
+
+☐ Product / App Demos
+
+☐ Testimonials
+
+☐ Motion Graphics / Animated Videos
+
+☐ Health Awareness Videos
+
+☐ Scripted Skits / Voiceover-Based Videos
+
+Which tools do you use regularly?
+
+☐ Adobe Premiere Pro
+
+☐ Final Cut Pro
+
+☐ After Effects
+
+☐ CapCut
+
+☐ DaVinci Resolve
+
+☐ Canva / VN Editor / Others
+
+How fast can you typically deliver a 1-minute reel or 5-minute YouTube edit (approx.)?
+
+Do you create thumbnails, titles, or social captions too?
+☐ Yes ☐ No ☐ Sometimes
+
+🧠 Section 3: Vision & Creativity
+Why do you want to be a video editor at Mediokart? (100–150 words)
+
+How would you visualize a video on "How AI is changing healthcare for Tier-2 cities"? (Brief idea/concept)
+
+How do you handle edits when there’s minimal footage or unclear script?
+
+Are you comfortable with feedback, quick deadlines, and collaborative edits?
+☐ Yes
+☐ No
+
+Do you prefer:
+
+☐ Editing only
+
+☐ Scripting + Editing
+
+☐ Thumbnail + Title + Publishing package
+
+🎁 Section 4: Sample Work & Uploads
+Upload your Resume (PDF only)
+
+Share 2–3 links to your best videos (Reels, YouTube, Client Work)
+
+(Optional) Share a short 30–60 sec video introducing yourself as a creative
+
+✅ Final Confirmation
+Are you ready to turn healthcare innovation into scroll-stopping videos that drive impact?
+☐ Yes, I’m ready
+☐ Not right now
+
+🚀 At Mediokart, videos are not just content — they’re stories of hope, science, and transformation.
+If you're a creator who can edit for attention and emotion, we want to work with you.
+
+Would you like me to now:
+
+Create a Google Form version
+
+Build a React-based web form
+
+Prepare a Figma mockup for your design team
+
+Help you write a video editor hiring post for social media?
+
+Just tell me your next move!
+
+
+
+
+
+
+
+
+You said:
+write for Healthcare Professionals
+add also for advice also 
+
+
+ChatGPT said:
+Here's a complete and carefully designed application form for Healthcare Professionals to join Mediokart — either as medical advisors, teleconsultants, subject-matter experts, or part-time collaborators.
+
+This form is tailored for doctors, pharmacists, wellness experts, and medical advisors who want to contribute to building a tech-enabled healthcare platform with trust, ethics, and empathy at its core.
+
+🩺 Join Mediokart as a Healthcare Professional / Medical Advisor
+Help shape India’s next-gen health platform with your expertise, compassion, and vision.
+Whether you're a doctor, pharmacist, nutritionist, or mental health professional — your guidance can change lives at scale.
+
+👤 Section 1: Personal Information
+Full Name
+
+Email Address
+
+Phone Number (WhatsApp preferred)
+
+City & State
+
+LinkedIn / Practo / Clinic Listing (optional)
+
+Personal Website / Online Presence (if any)
+
+Current Position
+
+☐ MBBS / BAMS / BHMS Student
+
+☐ Medical Graduate / Intern
+
+☐ General Physician
+
+☐ Specialist (e.g., Dermatologist, Pediatrician)
+
+☐ Pharmacist
+
+☐ Nutritionist / Dietician
+
+☐ Psychologist / Mental Health Expert
+
+☐ Public Health / Preventive Care Professional
+
+Current Workplace / Clinic Name (optional)
+
+Preferred Role with Mediokart
+
+☐ Full-time Health Expert
+
+☐ Part-time Medical Advisor
+
+☐ Volunteer / Pro-Bono Consultant
+
+☐ Health Content Reviewer
+
+☐ Guest Speaker / Webinar Contributor
+
+☐ Teleconsultation (online only)
+
+🧠 Section 2: Experience & Expertise
+Years of Experience in Healthcare
+
+Registration Number / Council Name (Optional but Preferred)
+
+Areas of Specialization or Interest (Select all that apply)
+
+☐ General Health & Family Medicine
+
+☐ Women’s Health
+
+☐ Child Health / Pediatrics
+
+☐ Mental Wellness / Psychology
+
+☐ Dermatology / Skin Care
+
+☐ Fitness & Lifestyle
+
+☐ Pharmacology & Medicine Use
+
+☐ Public Health / Awareness
+
+☐ Preventive Healthcare
+
+☐ AI in Healthcare / Digital Health
+
+Have you worked on any healthtech or digital platforms before?
+☐ Yes ☐ No
+If yes, briefly explain.
+
+Are you comfortable being featured on:
+
+☐ Blog articles
+
+☐ Social media reels
+
+☐ Short interviews / educational videos
+
+☐ Webinars / Live Q&A sessions
+
+💬 Section 3: Vision & Alignment
+Why do you want to be associated with Mediokart? (100–200 words)
+
+What kind of health impact do you dream of creating at scale?
+
+Are you open to sharing advice on how we can make Mediokart more ethical, affordable, and accessible?
+☐ Yes
+☐ No
+
+Would you be open to reviewing our health-related content, blog drafts, or social media posts for accuracy?
+☐ Yes, occasionally
+☐ Yes, actively
+☐ Not currently
+
+📎 Section 4: Uploads & Attachments
+Upload your Resume / CV (PDF only)
+
+Upload any medical registration proof / certificate (optional)
+
+Upload a short (30–60 sec) intro video — Who you are, why you care (optional)
+
+✅ Final Step
+Are you open to contributing your knowledge to a startup that's building India’s health-first, trust-first platform?
+☐ Yes, I’m excited
+☐ No
+
+💡 At Mediokart, we believe technology is only as good as the care behind it.
+Join us to bridge medical excellence with digital reach — and serve millions with dignity, facts, and humanity.
+
+Would you like this:
+
+As a Google Form or Typeform?
+
+In Notion or Airtable?
+
+As a React frontend component for your website?
+
+Or with extra email automation to onboard contributors?
+
+Let me know how you'd like to use it next, and I’ll help you deploy it.
+
+
+
+
+
+
+
+
+You said:
+write for Digital Marketing Specialists
+
+
+ChatGPT said:
+Here is a complete and optimized application form for Digital Marketing Specialists to join Mediokart — designed to attract data-driven, creative marketers who are passionate about scaling startups, health-tech impact, and performance marketing with purpose.
+
+📣 Join Mediokart as a Digital Marketing Specialist
+Drive awareness, growth, and trust for India’s next big health-tech platform.
+Be the brain behind strategies that connect millions with better healthcare solutions.
+
+👤 Section 1: Personal Information
+Full Name
+
+Email Address
+
+Phone Number (WhatsApp preferred)
+
+City & State
+
+LinkedIn Profile (required)
+
+Portfolio / Personal Website / Campaign Reports (if any)
+
+Current Status
+
+☐ Student
+
+☐ Freelancer
+
+☐ Employed
+
+☐ Full-time Job Seeker
+
+Preferred Role Type
+
+☐ Full-time
+
+☐ Part-time
+
+☐ Internship
+
+☐ Consultant / Project-Based
+
+💼 Section 2: Skills & Tools
+Which marketing areas do you specialize in? (Select all that apply)
+
+☐ Performance Marketing (Meta, Google Ads)
+
+☐ Organic Social Media Strategy
+
+☐ SEO / SEM
+
+☐ Influencer / Creator Marketing
+
+☐ Email Marketing
+
+☐ Content Distribution
+
+☐ Analytics & Conversion Optimization
+
+☐ Affiliate Marketing
+
+☐ WhatsApp / Community Marketing
+
+Which tools are you confident using?
+
+☐ Meta Business Suite
+
+☐ Google Ads / Google Analytics
+
+☐ Mailchimp / Brevo / Klaviyo
+
+☐ SEMrush / Ubersuggest / Ahrefs
+
+☐ Canva / Figma / Adobe Suite
+
+☐ Zapier / CRM Tools
+
+☐ Notion / Trello
+
+Share 2–3 examples or links of past campaigns you’ve managed or created.
+
+What is the maximum budget you’ve handled in a paid campaign? (₹ or USD)
+
+Are you comfortable with daily or weekly campaign performance reviews?
+☐ Yes ☐ No
+
+🎯 Section 3: Strategy & Mindset
+What would your 30-day plan be to launch and grow Mediokart’s digital presence from scratch? (150–250 words)
+
+What makes healthcare a challenging but rewarding space for digital marketing?
+
+Are you more comfortable with:
+
+☐ Running ads / Scaling paid campaigns
+
+☐ Building brand presence organically
+
+☐ Doing both together
+
+Which platforms would you prioritize first for Mediokart and why?
+
+☐ Instagram
+
+☐ YouTube
+
+☐ Google Search
+
+☐ WhatsApp
+
+☐ Quora / Reddit
+
+☐ Influencer Platforms
+
+☐ Other (explain)
+
+Are you comfortable with data-backed content + creativity collaboration?
+☐ Yes, love it
+☐ I prefer creative
+☐ I prefer numbers
+
+📎 Section 4: Uploads & Bonus
+Upload your Resume (PDF only)
+
+Upload any past campaign report / ad screenshots / analytics dashboards (optional)
+
+(Optional) Submit a 1-minute video pitch – your story + why Mediokart
+
+✅ Final Step
+Are you ready to grow a brand that can improve lives and impact millions?
+☐ Yes, let’s scale this!
+☐ Not at the moment
+
+🧠 At Mediokart, marketing is not just about metrics — it’s about mission.
+We’re not selling pills — we’re building trust, community, and healthcare literacy.
+If you love mixing growth mindset with social good, you belong here.
+
+Would you like me to:
+
+Convert this into a Google Form or Notion database?
+
+Build a web form in React or HTML?
+
+Help with a LinkedIn/Instagram job post caption for it?
+
+Let me know your next move and I’ll assist instantly.
+
+
+
+
+
+
+
+
+You said:
+it not for long form yr 
+
+
+ChatGPT said:
+Got it! Here's a short and impactful version of the application form for Digital Marketing Specialists — ideal for use on a website careers section, Notion, or even a Google Form with quick screening questions.
+
+🚀 Join Mediokart as a Digital Marketing Specialist
+Drive healthcare innovation through data, content, and strategy.
+
+👤 Basic Info
+Full Name
+
+Email
+
+Phone (WhatsApp preferred)
+
+Location (City, State)
+
+LinkedIn / Portfolio Link
+
+💼 Role Interest
+What type of role are you looking for?
+☐ Full-time ☐ Part-time ☐ Internship ☐ Project-based
+
+Areas of expertise:
+☐ Performance Ads
+☐ SEO/SEM
+☐ Email Marketing
+☐ Social Media
+☐ Influencer / Content Strategy
+
+⚙️ Skills Snapshot
+Tools you use:
+(e.g., Meta Ads, Google Ads, Canva, Mailchimp, SEMrush, Analytics)
+_____________________________
+
+One campaign/project you’re proud of (link or short line):
+_____________________________
+
+🎯 Quick Questions
+Why do you want to join Mediokart? (1–2 lines)
+_____________________________
+
+What's your top strength in marketing? (e.g., scaling ads, creating viral reels, writing hooks)
+_____________________________
+
+📎 Optional
+Upload Resume (PDF)
+
+Link to Campaign Reports / Creatives (optional)
+
+✅ Let’s build something big.
+If you believe in scaling with purpose — let’s grow Mediokart together.
+
+Let me know if you want the same short version for other roles too (like Video Editors, AI/ML, etc.) or a Notion-friendly layout.
+
+
+
+
+
+
+
+
